@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compliance 360 · Touch Latam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e28;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf0;--muted:#7a7f94;--accent:#4f8ef7;--accent2:#2dd4a0;--warn:#f0a040;--danger:#e85555;--purple:#9b7ff4;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;overflow:hidden}
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;height:100vh}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:10}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;overflow-y:auto}
+.main{overflow-y:auto;padding:24px;background:var(--bg)}
+.logo{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.3px}
+.logo span{color:var(--accent)}
+.cpill{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border2);cursor:pointer;transition:all .15s;color:var(--muted)}
+.cpill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;margin-left:12px;flex-shrink:0}
+.nav-label{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;padding:8px 20px 4px}
+.ni{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .15s;margin-bottom:1px}
+.ni:hover{background:var(--bg3);color:var(--text)}
+.ni.on{background:rgba(79,142,247,0.12);color:var(--accent)}
+.ni svg{width:16px;height:16px;flex-shrink:0}
+.nb{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px}
+.nb.w{background:var(--warn)}
+.view{display:none}
+.view.on{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.pt{font-size:20px;font-weight:600;letter-spacing:-.4px}
+.ps{font-size:13px;color:var(--muted);margin-top:2px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.ml{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.mv{font-size:28px;font-weight:600;letter-spacing:-1px;line-height:1}
+.ms{font-size:11px;color:var(--muted);margin-top:4px}
+.mc.ab{border-top:2px solid var(--accent)}
+.mc.ag{border-top:2px solid var(--accent2)}
+.mc.aw{border-top:2px solid var(--warn)}
+.mc.ad{border-top:2px solid var(--danger)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.ct{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.ct span{color:var(--muted);font-weight:400;font-size:12px}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--bg3)}
+table.t td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+table.t tr:last-child td{border-bottom:none}
+table.t tr:hover td{background:rgba(255,255,255,0.02)}
+.mono{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.bb{background:rgba(79,142,247,0.15);color:#7fb3ff;border:1px solid rgba(79,142,247,0.25)}
+.bg{background:rgba(45,212,160,0.12);color:#2dd4a0;border:1px solid rgba(45,212,160,0.2)}
+.bw{background:rgba(240,160,64,0.15);color:#f0a040;border:1px solid rgba(240,160,64,0.25)}
+.bd{background:rgba(232,85,85,0.15);color:#e85555;border:1px solid rgba(232,85,85,0.25)}
+.bp{background:rgba(155,127,244,0.15);color:#b99ff6;border:1px solid rgba(155,127,244,0.25)}
+.bz{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px}
+.dg{background:var(--accent2)}.dw{background:var(--warn)}.dd{background:var(--danger)}.db{background:var(--accent)}.dz{background:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--font);transition:all .15s}
+.btn-p{background:var(--accent);color:#fff}
+.btn-p:hover{background:#6b9ef8}
+.btn-g{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+.btn-g:hover{background:var(--bg3);color:var(--text)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
+input.fi,select.fi,textarea.fi{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;transition:border .15s}
+input.fi:focus,select.fi:focus,textarea.fi:focus{outline:none;border-color:var(--accent)}
+textarea.fi{resize:vertical;min-height:80px}
+select.fi option{background:var(--bg3)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.mbox{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.mt{font-size:16px;font-weight:600}
+.mc2{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:4px}
+.mc2:hover{color:var(--text)}
+.al{padding:10px 14px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.al.d{background:rgba(232,85,85,0.12);border:1px solid rgba(232,85,85,0.2);color:#f09090}
+.al.w{background:rgba(240,160,64,0.12);border:1px solid rgba(240,160,64,0.2);color:#f5c07a}
+.al.i{background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.2);color:#90b8ff}
+.pb{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-top:6px}
+.pf{height:100%;border-radius:2px;transition:width .4s}
+.df{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.df:last-child{border-bottom:none}
+.dk{color:var(--muted)}
+.sb{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;margin-bottom:16px}
+.sb input{background:none;border:none;color:var(--text);font-family:var(--font);font-size:13px;flex:1;outline:none}
+.sb input::placeholder{color:var(--muted)}
+.tli{display:flex;gap:12px;padding:8px 0}
+.tld{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.notif{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;font-size:13px;z-index:999;opacity:0;transform:translateY(10px);transition:all .3s;max-width:300px}
+.notif.show{opacity:1;transform:translateY(0)}
+.notif.ok{border-left:3px solid var(--accent2)}
+.notif.err{border-left:3px solid var(--danger)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:12px">· 360°</span></div>
+  <div style="display:flex;gap:6px;margin-left:auto">
+    <div class="cpill on" onclick="fc(this,'Todos')">Todos</div>
+    <div class="cpill" onclick="fc(this,'PE')">🇵🇪 Perú</div>
+    <div class="cpill" onclick="fc(this,'CL')">🇨🇱 Chile</div>
+    <div class="cpill" onclick="fc(this,'CO')">🇨🇴 Colombia</div>
+  </div>
+  <div style="font-size:12px;color:var(--muted);font-family:var(--mono)" id="clk"></div>
+  <div class="avatar">CO</div>
+</header>
+
+<aside class="sidebar">
+  <div class="nav-label">Principal</div>
+  <div class="ni on" onclick="sv('dashboard',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-label">Módulos</div>
+  <div class="ni" onclick="sv('casos',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/><path d="M5 7h6M5 10h4"/></svg>
+    Casos / Denuncias <span class="nb" id="bc">7</span>
+  </div>
+  <div class="ni" onclick="sv('consultas',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg>
+    Consultas <span class="nb w" id="bq">12</span>
+  </div>
+  <div class="ni" onclick="sv('contratos',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v4h4"/><path d="M5 9h6M5 12h4"/></svg>
+    Contratos
+  </div>
+  <div class="ni" onclick="sv('riesgos',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg>
+    Riesgos
+  </div>
+  <div class="ni" onclick="sv('evidencia',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h10v10H3z"/><path d="M6 6h4M6 9h4M6 12h2"/></svg>
+    Evidencia
+  </div>
+  <div class="ni" onclick="sv('mapa',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L2 4v10l4-2 4 2 4-2V2l-4 2-4-2z"/><path d="M6 2v10M10 4v10"/></svg>
+    Mapa de Riesgos
+  </div>
+  <div class="ni" onclick="sv('capacitaciones',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l7 4-7 4-7-4 7-4z"/><path d="M3 8.5v4l5 2.5 5-2.5v-4"/></svg>
+    Capacitaciones
+  </div>
+  <div class="ni" onclick="sv('auditorias',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5.5 8l2 2 3-3"/></svg>
+    Auditorías
+  </div>
+  <div style="margin-top:auto;border-top:1px solid var(--border);padding-top:12px">
+  <div class="ni" onclick="sv('config',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.42 1.42M11.36 11.36l1.42 1.42M3.22 12.78l1.42-1.42M11.36 4.64l1.42-1.42"/></svg>
+    Configuración
+  </div>
+  </div>
+</aside>
+
+<main class="main">
+<!-- DASHBOARD -->
+<div id="vd" class="view on">
+  <div class="ph">
+    <div><div class="pt">Dashboard de Compliance</div><div class="ps">Vista general · <span id="fdate"></span></div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mcaso')">+ Nuevo caso</button>
+  </div>
+  <div class="metrics">
+    <div class="mc ad"><div class="ml">Casos abiertos</div><div class="mv" style="color:var(--danger)" id="m1">7</div><div class="ms">↑ 2 esta semana</div></div>
+    <div class="mc aw"><div class="ml">Consultas pendientes</div><div class="mv" style="color:var(--warn)" id="m2">12</div><div class="ms">3 con SLA vencido</div></div>
+    <div class="mc ab"><div class="ml">Contratos en revisión</div><div class="mv" style="color:var(--accent)" id="m3">5</div><div class="ms">2 con riesgo crítico</div></div>
+    <div class="mc ag"><div class="ml">SLA cumplido</div><div class="mv" style="color:var(--accent2)">84%</div><div class="ms">Meta: 90%</div></div>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="al d"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg><strong>SLA vencido:</strong> Consulta QRY-CL-2026-019 lleva 72h sin respuesta<button class="btn btn-g btn-sm" style="margin-left:auto" onclick="sv('consultas',document.querySelectorAll('.ni')[3])">Ver →</button></div>
+    <div class="al w"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg><strong>Contrato próximo a vencer:</strong> CTR-PE-2026-007 vence en 15 días · Plaza Vea</div>
+    <div class="al d"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/></svg><strong>Riesgo crítico:</strong> Cláusula de penalidad sin límite detectada · Contrato Falabella CO</div>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card"><div class="ct">Casos recientes <span>últimos 30 días</span></div><table class="t"><thead><tr><th>Código</th><th>Tipo</th><th>País</th><th>Estado</th></tr></thead><tbody id="dtb"></tbody></table></div>
+    <div class="card"><div class="ct">KPIs de compliance <span>junio 2026</span></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Tasa de resolución</span><span style="color:var(--accent2);font-weight:600">76%</span></div><div class="pb"><div class="pf" style="width:76%;background:var(--accent2)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">SLA &lt; 48h consultas</span><span style="color:var(--accent);font-weight:600">84%</span></div><div class="pb"><div class="pf" style="width:84%;background:var(--accent)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Contratos revisados a tiempo</span><span style="color:var(--warn);font-weight:600">61%</span></div><div class="pb"><div class="pf" style="width:61%;background:var(--warn)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Riesgos mitigados (trim.)</span><span style="color:var(--accent2);font-weight:600">88%</span></div><div class="pb"><div class="pf" style="width:88%;background:var(--accent2)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Consultas respondidas</span><span style="color:var(--accent);font-weight:600">71%</span></div><div class="pb"><div class="pf" style="width:71%;background:var(--accent)"></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ct">Casos por tipo</div><div id="tch" style="display:flex;flex-direction:column;gap:8px"></div></div>
+    <div class="card"><div class="ct">Por país</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>🇵🇪 Perú</span><span style="color:var(--muted)">8 casos</span></div><div class="pb"><div class="pf" style="width:53%;background:var(--accent)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>🇨🇱 Chile</span><span style="color:var(--muted)">5 casos</span></div><div class="pb"><div class="pf" style="width:33%;background:var(--purple)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>🇨🇴 Colombia</span><span style="color:var(--muted)">3 casos</span></div><div class="pb"><div class="pf" style="width:20%;background:var(--accent2)"></div></div></div>
+      </div>
+    </div>
+    <div class="card"><div class="ct">Actividad reciente</div>
+      <div class="tli"><div class="tld dd"></div><div><div style="font-size:12px;font-weight:500">Nuevo caso registrado</div><div style="font-size:11px;color:var(--muted)">CMP-PE-2026-014 · hace 2h</div></div></div>
+      <div class="tli"><div class="tld dw"></div><div><div style="font-size:12px;font-weight:500">SLA vencido en consulta</div><div style="font-size:11px;color:var(--muted)">QRY-CL-2026-019 · hace 6h</div></div></div>
+      <div class="tli"><div class="tld db"></div><div><div style="font-size:12px;font-weight:500">Contrato analizado por IA</div><div style="font-size:11px;color:var(--muted)">CTR-CO-2026-011 · ayer</div></div></div>
+      <div class="tli"><div class="tld dg"></div><div><div style="font-size:12px;font-weight:500">Caso cerrado</div><div style="font-size:11px;color:var(--muted)">CMP-CO-2026-002 · ayer</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CASOS -->
+<div id="vc" class="view">
+  <div class="ph">
+    <div><div class="pt">Casos y Denuncias</div><div class="ps">Registro completo · Código automático por país</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mcaso')">+ Nuevo caso</button>
+  </div>
+  <div class="sb"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar por código, tipo o responsable..." oninput="ft('ctb',this.value)"><select class="fi" style="width:auto;padding:4px 8px;font-size:12px" onchange="fce(this.value)"><option value="">Todos los estados</option><option>Recibido</option><option>En evaluación</option><option>En investigación</option><option>Cerrado</option></select></div>
+  <div class="card" style="padding:0"><table class="t"><thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>País</th><th>Área</th><th>Estado</th><th>Responsable</th><th>Evidencia</th><th></th></tr></thead><tbody id="ctb"></tbody></table></div>
+</div>
+
+<!-- CONSULTAS -->
+<div id="vq" class="view">
+  <div class="ph">
+    <div><div class="pt">Consultas Internas</div><div class="ps">SLA 48 horas · Gestión preventiva</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mcons')">+ Nueva consulta</button>
+  </div>
+  <div id="sla-al" style="margin-bottom:12px"></div>
+  <div class="sb"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar consultas..." oninput="ft('qtb',this.value)"></div>
+  <div class="card" style="padding:0"><table class="t"><thead><tr><th>Código</th><th>Solicitante</th><th>Tipo</th><th>País</th><th>Cliente</th><th>Estado</th><th>Límite SLA</th><th></th></tr></thead><tbody id="qtb"></tbody></table></div>
+</div>
+
+<!-- CONTRATOS -->
+<div id="vctr" class="view">
+  <div class="ph">
+    <div><div class="pt">Revisión de Contratos</div><div class="ps">Análisis IA · Cláusulas críticas · Historial</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mctr')">+ Subir contrato</button>
+  </div>
+  <div class="card" style="padding:0;margin-bottom:14px"><table class="t"><thead><tr><th>Código</th><th>Cliente</th><th>País</th><th>Tipo</th><th>Nivel de riesgo</th><th>Cláusulas críticas</th><th>Estado</th><th>Análisis</th></tr></thead><tbody id="ctrtb"></tbody></table></div>
+  <div class="card" style="background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)"><div style="display:flex;align-items:center;gap:10px;font-size:13px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg><span style="color:var(--accent);font-weight:500">Análisis automático con IA:</span><span style="color:var(--muted)">Al subir el contrato, el sistema detecta cláusulas de penalidad, responsabilidad, exclusividad y terminación. El informe llega por email al solicitante en &lt; 5 minutos.</span></div></div>
+</div>
+
+<!-- RIESGOS -->
+<div id="vr" class="view">
+  <div class="ph">
+    <div><div class="pt">Gestión de Riesgos</div><div class="ps">Matriz por país · Probabilidad × Impacto</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mrisk')">+ Nuevo riesgo</button>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card"><div class="ct">Mapa de calor</div><div id="hmap"></div><div style="display:flex;gap:12px;margin-top:10px;font-size:11px"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6ee7b7;margin-right:4px"></span>Bajo</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--warn);margin-right:4px"></span>Medio</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--danger);margin-right:4px"></span>Alto</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#991b1b;margin-right:4px"></span>Crítico</span></div></div>
+    <div class="card"><div class="ct">Ley 20.393 · Chile</div><div id="leyc" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div></div>
+  </div>
+  <div class="card" style="padding:0"><table class="t"><thead><tr><th>Riesgo</th><th>País</th><th>Probabilidad</th><th>Impacto</th><th>Nivel</th><th>Control</th><th>Responsable</th></tr></thead><tbody id="rtb"></tbody></table></div>
+</div>
+
+<!-- EVIDENCIA -->
+<div id="ve" class="view">
+  <div class="ph">
+    <div><div class="pt">Repositorio de Evidencia</div><div class="ps">Documentos auditables · Versionado · Inmutable</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mev')">+ Subir documento</button>
+  </div>
+  <div class="al d" style="margin-bottom:16px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg>Regla de evidencia válida: los mensajes de WhatsApp NO son aceptados. Solo documentos formales cargados en este repositorio tienen validez en auditoría.</div>
+  <div class="card" style="padding:0"><table class="t"><thead><tr><th>Documento</th><th>Caso / Consulta</th><th>País</th><th>Cargado por</th><th>Fecha</th><th>Versión</th><th>Tipo</th></tr></thead><tbody id="etb"></tbody></table></div>
+</div>
+
+<!-- CONFIG -->
+<div id="vcfg" class="view">
+  <div class="ph"><div class="pt">Configuración del sistema</div></div>
+  <div class="g2">
+    <div class="card"><div class="ct">Usuarios y permisos</div><table class="t"><thead><tr><th>Nombre</th><th>Rol</th><th>País</th><th>Estado</th></tr></thead><tbody>
+      <tr><td>Compliance Officer</td><td><span class="badge bb">Admin</span></td><td>Todos</td><td><span class="badge bg">Activo</span></td></tr>
+      <tr><td>KAM Perú</td><td><span class="badge bz">Usuario</span></td><td>🇵🇪 PE</td><td><span class="badge bg">Activo</span></td></tr>
+      <tr><td>KAM Chile</td><td><span class="badge bz">Usuario</span></td><td>🇨🇱 CL</td><td><span class="badge bg">Activo</span></td></tr>
+      <tr><td>KAM Colombia</td><td><span class="badge bz">Usuario</span></td><td>🇨🇴 CO</td><td><span class="badge bg">Activo</span></td></tr>
+      <tr><td>Gerencia General</td><td><span class="badge bp">Revisor</span></td><td>Todos</td><td><span class="badge bg">Activo</span></td></tr>
+    </tbody></table></div>
+    <div class="card"><div class="ct">SLA configurados</div>
+      <div class="df"><span class="dk">Consultas contractuales</span><span>48 horas hábiles</span></div>
+      <div class="df"><span class="dk">Consultas comerciales</span><span>24 horas hábiles</span></div>
+      <div class="df"><span class="dk">Revisión de contratos</span><span>72 horas hábiles</span></div>
+      <div class="df"><span class="dk">Casos / denuncias</span><span>5 días hábiles</span></div>
+      <div class="df"><span class="dk">Escala a Gerencia</span><span>+24h sobre SLA</span></div>
+    </div>
+  </div>
+</div>
+<!-- MODALES -->
+<div class="mo" id="mcaso">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Registrar nuevo caso / denuncia</div><button class="mc2" onclick="cm('mcaso')">×</button></div>
+    <div class="fr3" style="margin-bottom:14px">
+      <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Código asignado</div><div class="mono" id="nc" style="font-size:14px;color:var(--accent)">CMP-PE-2026-015</div></div>
+      <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Fecha</div><div style="font-size:12px" id="nf"></div></div>
+      <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Estado inicial</div><div><span class="badge bw">Recibido</span></div></div>
+    </div>
+    <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="cp" onchange="uc()"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div><div class="fg"><label class="fl">Tipo de riesgo *</label><select class="fi" id="ct2"><option>Legal</option><option>Laboral</option><option>Financiero</option><option>Fraude</option><option>Conflicto de interés</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Área involucrada *</label><select class="fi" id="ca"><option>Comercial</option><option>Finanzas</option><option>RRHH</option><option>Operaciones</option><option>Reclutamiento</option></select></div><div class="fg"><label class="fl">Denunciante (opcional)</label><input class="fi" id="cd2" placeholder="Nombre o anónimo"></div></div>
+    <div class="fg"><label class="fl">Descripción detallada de los hechos *</label><textarea class="fi" id="cdesc" placeholder="Describe la situación, fecha aproximada, personas involucradas..."></textarea></div>
+    <div class="fg"><label class="fl">Evidencia (nombre del archivo)</label><input class="fi" id="cev" placeholder="ej: correo_23mayo.pdf"><div style="font-size:11px;color:var(--danger);margin-top:4px">⚠ Mensajes de WhatsApp no son evidencia válida. Solo documentos formales.</div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-g" onclick="cm('mcaso')">Cancelar</button>
+      <button class="btn btn-p" onclick="gCaso()">Registrar caso</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="mcons">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Nueva consulta de compliance</div><button class="mc2" onclick="cm('mcons')">×</button></div>
+    <div class="fr"><div class="fg"><label class="fl">Tu nombre *</label><input class="fi" id="qn" placeholder="Nombre completo"></div><div class="fg"><label class="fl">Área *</label><select class="fi" id="qa"><option>Comercial / KAM</option><option>Finanzas</option><option>RRHH</option><option>Operaciones</option><option>Gerencia</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="qp"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div><div class="fg"><label class="fl">Tipo *</label><select class="fi" id="qt"><option>Contractual</option><option>Comercial</option><option>Legal</option><option>Operativa</option><option>Riesgos</option></select></div></div>
+    <div class="fg"><label class="fl">Cliente (si aplica)</label><input class="fi" id="qc" placeholder="Nombre del cliente"></div>
+    <div class="fg"><label class="fl">Describe tu consulta *</label><textarea class="fi" id="qd" placeholder="¿Cuál es tu duda? Incluye contexto del negocio..."></textarea></div>
+    <div style="background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.2);border-radius:8px;padding:10px;font-size:12px;color:#90b8ff;margin-bottom:14px">⏱ SLA: respuesta en <strong>48 horas hábiles</strong>. Se genera código de seguimiento automáticamente.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="cm('mcons')">Cancelar</button>
+      <button class="btn btn-p" onclick="gCons()">Enviar consulta</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="mctr">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Subir contrato para revisión</div><button class="mc2" onclick="cm('mctr')">×</button></div>
+    <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="rp"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div><div class="fg"><label class="fl">Tipo *</label><select class="fi" id="rt"><option>Servicio BTL</option><option>Outsourcing</option><option>Mesa de compras</option><option>Marco comercial</option><option>Otro</option></select></div></div>
+    <div class="fg"><label class="fl">Cliente *</label><input class="fi" id="rc" placeholder="Empresa cliente"></div>
+    <div class="fg"><label class="fl">Nombre del archivo *</label><input class="fi" id="rf" placeholder="ej: contrato_falabella_co_2026.pdf"></div>
+    <div class="fg"><label class="fl">Notas para el análisis</label><textarea class="fi" id="rn" placeholder="¿Hay alguna cláusula que te preocupa específicamente?"></textarea></div>
+    <div style="background:rgba(45,212,160,0.08);border:1px solid rgba(45,212,160,0.2);border-radius:8px;padding:10px;font-size:12px;color:#6ee7b7;margin-bottom:14px">🤖 El sistema analiza: penalidades, responsabilidad, exclusividad, terminación anticipada y condiciones de pago. Informe por email en &lt; 5 min.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="cm('mctr')">Cancelar</button>
+      <button class="btn btn-p" onclick="gCtr()">Subir y analizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="mrisk">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Registrar nuevo riesgo</div><button class="mc2" onclick="cm('mrisk')">×</button></div>
+    <div class="fg"><label class="fl">Descripción del riesgo *</label><input class="fi" id="rn2" placeholder="ej: Contratos sin revisión legal previa a firma"></div>
+    <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="rp2"><option>Todos</option><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div><div class="fg"><label class="fl">Área</label><select class="fi" id="ra"><option>Comercial</option><option>Finanzas</option><option>RRHH</option><option>Legal</option><option>Operaciones</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Probabilidad</label><select class="fi" id="rpr"><option>Alta</option><option>Media</option><option>Baja</option></select></div><div class="fg"><label class="fl">Impacto</label><select class="fi" id="rim"><option>Alto</option><option>Medio</option><option>Bajo</option></select></div></div>
+    <div class="fg"><label class="fl">Control implementado</label><input class="fi" id="rct" placeholder="ej: Revisión obligatoria antes de firma"></div>
+    <div class="fg"><label class="fl">Responsable</label><input class="fi" id="rrs" placeholder="Nombre del responsable"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-g" onclick="cm('mrisk')">Cancelar</button>
+      <button class="btn btn-p" onclick="gRisk()">Guardar riesgo</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="mev">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Subir documento de evidencia</div><button class="mc2" onclick="cm('mev')">×</button></div>
+    <div class="fg"><label class="fl">Nombre del documento *</label><input class="fi" id="en" placeholder="ej: correo_aprobacion_contrato.pdf"></div>
+    <div class="fr"><div class="fg"><label class="fl">Asociado a (código)</label><input class="fi" id="ec" placeholder="CMP-PE-2026-001"></div><div class="fg"><label class="fl">País</label><select class="fi" id="ep"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div></div>
+    <div class="fg"><label class="fl">Tipo de documento</label><select class="fi" id="et"><option>Correo electrónico</option><option>Contrato</option><option>Acta de reunión</option><option>Declaración jurada</option><option>Informe</option><option>Otro</option></select></div>
+    <div style="background:rgba(232,85,85,0.08);border:1px solid rgba(232,85,85,0.2);border-radius:8px;padding:10px;font-size:12px;color:#f09090;margin-bottom:14px">⚠ Una vez subido, el documento no puede editarse ni eliminarse. Verifica el nombre antes de guardar.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="cm('mev')">Cancelar</button>
+      <button class="btn btn-p" onclick="gEv()">Registrar documento</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="mdet">
+  <div class="mbox">
+    <div class="mh"><div><div class="mt" id="det-cod"></div><div style="font-size:12px;color:var(--muted);margin-top:2px" id="det-sub"></div></div><button class="mc2" onclick="cm('mdet')">×</button></div>
+    <div id="det-body"></div>
+    <div style="margin-top:16px"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Cambiar estado</div><div style="display:flex;gap:6px;flex-wrap:wrap" id="det-acts"></div></div>
+  </div>
+</div>
+
+<div class="notif" id="ntf"></div>
+
+<!-- MAPA DE RIESGOS POR PAÍS -->
+<div id="vmapa" class="view">
+  <div class="ph">
+    <div><div class="pt">Mapa de Riesgos por País</div><div class="ps">Calor de riesgo agregado · Perú · Chile · Colombia</div></div>
+    <div style="display:flex;gap:8px">
+      <select class="fi" id="mapa-filter" onchange="rMapa()" style="width:auto;padding:6px 12px;font-size:12px">
+        <option value="">Todos los tipos</option>
+        <option>Legal</option><option>Financiero</option><option>Laboral</option><option>Operacional</option>
+      </select>
+    </div>
+  </div>
+  <div class="g3" style="margin-bottom:16px" id="mapa-cards"></div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card"><div class="ct">Distribución de riesgo por área</div><div id="mapa-areas" style="display:flex;flex-direction:column;gap:10px;margin-top:4px"></div></div>
+    <div class="card"><div class="ct">Evolución mensual de casos críticos <span>2026</span></div><div id="mapa-trend" style="display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:8px;padding-top:8px"></div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Detalle de riesgos por país y nivel</div>
+    <table class="t"><thead><tr><th>País</th><th>Riesgo</th><th>Área</th><th>Nivel</th><th>Probabilidad</th><th>Impacto</th><th>Control</th><th>Estado control</th></tr></thead>
+    <tbody id="mapa-tb"></tbody></table>
+  </div>
+</div>
+
+<!-- CAPACITACIONES -->
+<div id="vcap" class="view">
+  <div class="ph">
+    <div><div class="pt">Gestión de Capacitaciones</div><div class="ps">Formación obligatoria · Seguimiento por país y área</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('mcap')">+ Nueva capacitación</button>
+  </div>
+  <div class="metrics">
+    <div class="mc ag"><div class="ml">Completadas (año)</div><div class="mv" style="color:var(--accent2)" id="cap-m1">18</div><div class="ms">de 24 programadas</div></div>
+    <div class="mc aw"><div class="ml">Pendientes</div><div class="mv" style="color:var(--warn)" id="cap-m2">6</div><div class="ms">próximos 30 días</div></div>
+    <div class="mc ab"><div class="ml">Participantes activos</div><div class="mv" style="color:var(--accent)">87</div><div class="ms">en los 3 países</div></div>
+    <div class="mc ad"><div class="ml">Con calificación &lt; 70%</div><div class="mv" style="color:var(--danger)">4</div><div class="ms">requieren repaso</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card"><div class="ct">Cobertura por país</div><div id="cap-cov" style="display:flex;flex-direction:column;gap:12px;margin-top:4px"></div></div>
+    <div class="card"><div class="ct">Próximas capacitaciones <span>30 días</span></div><div id="cap-prox" style="display:flex;flex-direction:column;gap:8px"></div></div>
+  </div>
+  <div class="sb"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar capacitaciones..." oninput="ft('cap-tb',this.value)"></div>
+  <div class="card" style="padding:0"><table class="t"><thead><tr><th>Capacitación</th><th>Tipo</th><th>País</th><th>Área</th><th>Fecha</th><th>Participantes</th><th>Calificación</th><th>Estado</th><th></th></tr></thead><tbody id="cap-tb"></tbody></table></div>
+</div>
+
+<!-- AUDITORÍAS -->
+<div id="vaud" class="view">
+  <div class="ph">
+    <div><div class="pt">Auditorías de Compliance</div><div class="ps">Internas y externas · Hallazgos · Plan de acción</div></div>
+    <button class="btn btn-p btn-sm" onclick="om('maud')">+ Nueva auditoría</button>
+  </div>
+  <div class="metrics">
+    <div class="mc ab"><div class="ml">Auditorías totales</div><div class="mv" style="color:var(--accent)" id="aud-m1">9</div><div class="ms">año 2026</div></div>
+    <div class="mc ag"><div class="ml">Completadas</div><div class="mv" style="color:var(--accent2)">5</div><div class="ms">sin hallazgos críticos</div></div>
+    <div class="mc aw"><div class="ml">En curso</div><div class="mv" style="color:var(--warn)">2</div><div class="ms">plan de acción activo</div></div>
+    <div class="mc ad"><div class="ml">Hallazgos abiertos</div><div class="mv" style="color:var(--danger)" id="aud-hall">11</div><div class="ms">requieren acción</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card"><div class="ct">Estado de hallazgos por país</div><div id="aud-hall-chart" style="display:flex;flex-direction:column;gap:10px;margin-top:4px"></div></div>
+    <div class="card">
+      <div class="ct">Próximas auditorías <span>programadas</span></div>
+      <div id="aud-prox" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+  <div class="sb"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar auditorías..." oninput="ft('aud-tb',this.value)"></div>
+  <div class="card" style="padding:0"><table class="t"><thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>País</th><th>Fecha</th><th>Responsable</th><th>Hallazgos</th><th>Estado</th><th></th></tr></thead><tbody id="aud-tb"></tbody></table></div>
+</div>
+
+<!-- MODAL CAPACITACION -->
+<div class="mo" id="mcap">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Registrar capacitación</div><button class="mc2" onclick="cm('mcap')">×</button></div>
+    <div class="fg"><label class="fl">Nombre de la capacitación *</label><input class="fi" id="cap-n" placeholder="ej: Prevención de Lavado de Activos 2026"></div>
+    <div class="fr"><div class="fg"><label class="fl">Tipo *</label><select class="fi" id="cap-t"><option>Obligatoria (Ley)</option><option>Obligatoria (Interna)</option><option>Voluntaria</option><option>Inducción</option></select></div><div class="fg"><label class="fl">Modalidad</label><select class="fi" id="cap-mod"><option>Presencial</option><option>Virtual sincrónica</option><option>E-learning</option><option>Mixta</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="cap-p"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option><option value="Todos">Todos</option></select></div><div class="fg"><label class="fl">Área(s)</label><select class="fi" id="cap-a"><option>Todas las áreas</option><option>Comercial</option><option>Finanzas</option><option>RRHH</option><option>Operaciones</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Fecha programada *</label><input class="fi" type="date" id="cap-f"></div><div class="fg"><label class="fl">Duración (horas)</label><input class="fi" id="cap-h" placeholder="2" type="number"></div></div>
+    <div class="fg"><label class="fl">Instructor / Plataforma</label><input class="fi" id="cap-inst" placeholder="ej: Officer Compliance / Moodle"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-g" onclick="cm('mcap')">Cancelar</button>
+      <button class="btn btn-p" onclick="gCap()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AUDITORIA -->
+<div class="mo" id="maud">
+  <div class="mbox">
+    <div class="mh"><div class="mt">Registrar nueva auditoría</div><button class="mc2" onclick="cm('maud')">×</button></div>
+    <div class="fr"><div class="fg"><label class="fl">Código</label><div class="fi" style="background:var(--bg);color:var(--muted);padding:9px 12px;border-radius:8px;font-family:var(--mono);font-size:12px" id="aud-cod-prev">AUD-PE-2026-010</div></div><div class="fg"><label class="fl">Tipo *</label><select class="fi" id="aud-t" onchange="uAudCod()"><option>Interna</option><option>Externa</option><option>Regulatoria</option></select></div></div>
+    <div class="fg"><label class="fl">Nombre / alcance *</label><input class="fi" id="aud-n" placeholder="ej: Auditoría contratos comerciales Q2 2026"></div>
+    <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="aud-p" onchange="uAudCod()"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div><div class="fg"><label class="fl">Área auditada</label><select class="fi" id="aud-a"><option>Compliance</option><option>Finanzas</option><option>Comercial</option><option>RRHH</option><option>Operaciones</option><option>Todas</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Fecha inicio *</label><input class="fi" type="date" id="aud-fi"></div><div class="fg"><label class="fl">Fecha fin estimada</label><input class="fi" type="date" id="aud-ff"></div></div>
+    <div class="fg"><label class="fl">Auditor responsable *</label><input class="fi" id="aud-r" placeholder="Nombre del auditor o firma externa"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-g" onclick="cm('maud')">Cancelar</button>
+      <button class="btn btn-p" onclick="gAud()">Registrar auditoría</button>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ===== DATA =====
+let casos=[
+  {c:'CMP-PE-2026-014',f:'12/05/2026',p:'PE',t:'Fraude',a:'Finanzas',e:'En investigación',r:'Officer PE',ev:'3 archivos',d:'Posible manipulación de notas de crédito sin autorización doble.'},
+  {c:'CMP-CL-2026-008',f:'08/05/2026',p:'CL',t:'Laboral',a:'RRHH',e:'En evaluación',r:'Officer CL',ev:'1 archivo',d:'Denuncia de acoso laboral en equipo de operaciones Chile.'},
+  {c:'CMP-CO-2026-003',f:'28/04/2026',p:'CO',t:'Legal',a:'Comercial',e:'Recibido',r:'Officer CO',ev:'Sin evidencia',d:'Consulta sobre validez de exclusividad en contrato Falabella Colombia.'},
+  {c:'CMP-PE-2026-013',f:'05/05/2026',p:'PE',t:'Conflicto de interés',a:'Operaciones',e:'Cerrado',r:'Officer PE',ev:'2 archivos',d:'Conflicto de interés en proceso de selección de proveedor de activación.'},
+  {c:'CMP-CL-2026-007',f:'02/05/2026',p:'CL',t:'Financiero',a:'Finanzas',e:'En investigación',r:'Officer CL',ev:'5 archivos',d:'Inconsistencia en márgenes reportados para cliente retail Ripley.'},
+  {c:'CMP-CO-2026-002',f:'15/04/2026',p:'CO',t:'Legal',a:'Comercial',e:'Cerrado',r:'Officer CO',ev:'4 archivos',d:'Revisión de cláusula de terminación anticipada en contrato marco.'},
+  {c:'CMP-PE-2026-012',f:'01/05/2026',p:'PE',t:'Laboral',a:'RRHH',e:'En evaluación',r:'Officer PE',ev:'2 archivos',d:'Irregularidad en proceso de liquidación de picker temporal.'},
+];
+let cons=[
+  {c:'QRY-PE-2026-041',s:'María González',a:'Comercial',t:'Contractual',p:'PE',cl:'Plaza Vea',e:'Recibido',l:'04/06/2026',d:'Cláusula de exclusividad 12 meses — ¿podemos aceptar?'},
+  {c:'QRY-CL-2026-019',s:'Carlos Ruiz',a:'Operaciones',t:'Operativa',p:'CL',cl:'Ripley',e:'SLA Vencido',l:'01/06/2026',d:'Responsabilidad por daños de mercadería en activación BTL.'},
+  {c:'QRY-CO-2026-008',s:'Ana Torres',a:'Finanzas',t:'Legal',p:'CO',cl:'Éxito',e:'En proceso',l:'05/06/2026',d:'Tratamiento tributario de nota de crédito por campaña.'},
+  {c:'QRY-PE-2026-040',s:'Luis Paredes',a:'Comercial',t:'Comercial',p:'PE',cl:'Tottus',e:'Respondido',l:'31/05/2026',d:'Margen mínimo permitido para propuesta de shopper.'},
+  {c:'QRY-CL-2026-018',s:'Sofía Vega',a:'RRHH',t:'Legal',p:'CL',cl:'-',e:'Recibido',l:'05/06/2026',d:'Proceso de desvinculación bajo Ley 20.393 Chile.'},
+  {c:'QRY-CO-2026-007',s:'Pedro Mora',a:'Comercial',t:'Contractual',p:'CO',cl:'Falabella',e:'En proceso',l:'03/06/2026',d:'Límite de penalidad en contrato marco de servicios BTL Colombia.'},
+];
+let ctrs=[
+  {c:'CTR-CO-2026-011',cl:'Falabella Colombia',p:'CO',t:'Servicio BTL',r:'Crítico',cls:'Penalidad sin límite, terminación unilateral',e:'En revisión',an:'Completado'},
+  {c:'CTR-PE-2026-007',cl:'Plaza Vea',p:'PE',t:'Outsourcing',r:'Medio',cls:'Exclusividad 18 meses',e:'Vigente',an:'Completado'},
+  {c:'CTR-CL-2026-005',cl:'Ripley Chile',p:'CL',t:'Marco comercial',r:'Bajo',cls:'Ninguna crítica',e:'Vigente',an:'Completado'},
+  {c:'CTR-PE-2026-009',cl:'Tottus',p:'PE',t:'Servicio BTL',r:'Alto',cls:'Responsabilidad extensiva, pago a 90 días',e:'En revisión',an:'Completado'},
+  {c:'CTR-CO-2026-012',cl:'Éxito Colombia',p:'CO',t:'Mesa de compras',r:'Crítico',cls:'Exclusividad + penalidad sin tope',e:'Pendiente firma',an:'En proceso'},
+];
+let risks=[
+  {n:'Notas de crédito no auditadas',p:'PE',a:'Finanzas',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Aprobación doble + log inmutable',rs:'CFO PE'},
+  {n:'Contrato sin revisión legal',p:'CO',a:'Comercial',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Módulo C obligatorio antes de firma',rs:'Officer CO'},
+  {n:'Incumplimiento Ley 20.393',p:'CL',a:'Legal',pr:'Media',im:'Muy alto',nv:'Crítico',ct:'Capacitación anual + checklist',rs:'Officer CL'},
+  {n:'Márgenes incorrectos en cotizaciones',p:'PE/CO',a:'Finanzas',pr:'Media',im:'Alto',nv:'Alto',ct:'Validación automática margen mínimo',rs:'CFO'},
+  {n:'Fuga de información por WhatsApp',p:'Todos',a:'Todos',pr:'Alta',im:'Alto',nv:'Alto',ct:'Política formal + canal compliance',rs:'Officer Global'},
+  {n:'Conflicto de interés en outsourcing',p:'CL',a:'RRHH',pr:'Baja',im:'Alto',nv:'Medio',ct:'Declaración jurada anual',rs:'RRHH CL'},
+  {n:'Picker/driver sin contrato vigente',p:'Todos',a:'RRHH',pr:'Media',im:'Medio',nv:'Bajo',ct:'Alerta automática vencimiento',rs:'Ops'},
+];
+let evids=[
+  {n:'correo_aprobacion_nc_mayo.pdf',c:'CMP-PE-2026-014',p:'PE',u:'Officer PE',f:'12/05/2026',v:'v1',t:'Correo electrónico'},
+  {n:'acta_reunion_falabella_co.pdf',c:'CTR-CO-2026-011',p:'CO',u:'KAM CO',f:'10/05/2026',v:'v1',t:'Acta de reunión'},
+  {n:'declaracion_jurada_conflicto.pdf',c:'CMP-PE-2026-013',p:'PE',u:'Officer PE',f:'06/05/2026',v:'v1',t:'Declaración jurada'},
+  {n:'informe_margen_ripley_cl.xlsx',c:'CMP-CL-2026-007',p:'CL',u:'CFO CL',f:'03/05/2026',v:'v2',t:'Informe'},
+  {n:'contrato_plaza_vea_v3.pdf',c:'CTR-PE-2026-007',p:'PE',u:'Officer PE',f:'01/05/2026',v:'v3',t:'Contrato'},
+];
+let nn=15,nq=42,nctr=13;
+
+// ===== UTILS =====
+function fp(code){return{PE:'🇵🇪 PE',CL:'🇨🇱 CL',CO:'🇨🇴 CO'}[code]||code}
+function eb(e){
+  const m={'Recibido':'bw','En evaluación':'bb','En investigación':'bp','Cerrado':'bz','En proceso':'bb','Respondido':'bg','SLA Vencido':'bd','Vigente':'bg','En revisión':'bw','Pendiente firma':'bw','Completado':'bg','Contractual':'bb','Comercial':'bb','Legal':'bp','Operativa':'bz','Riesgos':'bw','Fraude':'bd','Laboral':'bw','Financiero':'bw','Conflicto de interés':'bp','Legal':'bp'};
+  return`<span class="badge ${m[e]||'bz'}">${e}</span>`
+}
+function rb(r){const m={Crítico:'bd',Alto:'bw',Medio:'bb',Bajo:'bg'};return`<span class="badge ${m[r]||'bz'}">${r}`}
+function td(){const d=new Date();return d.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function ntf(msg,t='ok'){const n=document.getElementById('ntf');n.textContent=msg;n.className=`notif show ${t}`;setTimeout(()=>n.classList.remove('show'),3200)}
+function om(id){document.getElementById(id).classList.add('open')}
+function cm(id){document.getElementById(id).classList.remove('open')}
+function ft(tb,q){document.getElementById(tb).querySelectorAll('tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'})}
+function fce(v){document.getElementById('ctb').querySelectorAll('tr').forEach(r=>{r.style.display=(!v||r.textContent.includes(v))?'':'none'})}
+function fc(el,c){document.querySelectorAll('.cpill').forEach(p=>p.classList.remove('on'));el.classList.add('on')}
+function sv(id,el){
+  const map={dashboard:'vd',casos:'vc',consultas:'vq',contratos:'vctr',riesgos:'vr',evidencia:'ve',config:'vcfg',mapa:'vmapa',capacitaciones:'vcap',auditorias:'vaud'};
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById(map[id]).classList.add('on');
+  if(el) el.classList.add('on');
+}
+
+// ===== RENDER =====
+function rDash(){
+  document.getElementById('dtb').innerHTML=casos.slice(0,5).map(c=>`<tr><td class="mono" style="font-size:11px">${c.c}</td><td>${eb(c.t)}</td><td>${fp(c.p)}</td><td><span class="dot ${c.e==='Cerrado'?'dz':c.e==='En investigación'?'db':c.e==='Recibido'?'dw':'db'}"></span><span style="font-size:12px">${c.e}</span></td></tr>`).join('');
+  const tipos={};casos.forEach(c=>{tipos[c.t]=(tipos[c.t]||0)+1});
+  const max=Math.max(...Object.values(tipos));
+  document.getElementById('tch').innerHTML=Object.entries(tipos).map(([t,n])=>`<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">${t}</span><span style="font-weight:600">${n}</span></div><div class="pb"><div class="pf" style="width:${n/max*100}%;background:var(--accent)"></div></div></div>`).join('');
+}
+function rCasos(){
+  document.getElementById('ctb').innerHTML=casos.map((c,i)=>`<tr><td class="mono">${c.c}</td><td style="font-size:12px;color:var(--muted)">${c.f}</td><td>${eb(c.t)}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.a}</td><td>${eb(c.e)}</td><td style="font-size:12px">${c.r}</td><td style="font-size:12px;color:${c.ev==='Sin evidencia'?'var(--danger)':'var(--accent2)'}">${c.ev}</td><td><button class="btn btn-g btn-sm" onclick="vCaso(${i})">Ver →</button></td></tr>`).join('');
+}
+function rCons(){
+  document.getElementById('qtb').innerHTML=cons.map((q,i)=>`<tr><td class="mono">${q.c}</td><td>${q.s}</td><td>${eb(q.t)}</td><td>${fp(q.p)}</td><td style="font-size:12px;color:var(--muted)">${q.cl}</td><td>${eb(q.e)}</td><td style="font-size:12px;color:${q.e==='SLA Vencido'?'var(--danger)':'var(--muted)'};font-weight:${q.e==='SLA Vencido'?'600':'400'}">${q.l}</td><td><button class="btn btn-g btn-sm" onclick="vCons(${i})">Responder →</button></td></tr>`).join('');
+  const v=cons.filter(q=>q.e==='SLA Vencido').length;
+  document.getElementById('sla-al').innerHTML=v?`<div class="al d"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg><strong>${v} consulta(s) con SLA vencido</strong> — Respuesta inmediata requerida</div>`:'';
+}
+function rCtrs(){
+  document.getElementById('ctrtb').innerHTML=ctrs.map(c=>`<tr><td class="mono">${c.c}</td><td style="font-weight:500">${c.cl}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.t}</td><td>${rb(c.r)}</span></td><td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)';max-width:160px}">${c.cls}</td><td>${eb(c.e)}</td><td>${eb(c.an)}</td></tr>`).join('');
+}
+function rRisks(){
+  document.getElementById('rtb').innerHTML=risks.map(r=>`<tr><td style="font-weight:500;max-width:180px;font-size:13px">${r.n}</td><td style="font-size:12px">${r.p}</td><td>${eb(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado').replace(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado',r.pr)}</td><td>${eb(r.im.includes('Alto')?'SLA Vencido':'En evaluación').replace(r.im.includes('Alto')?'SLA Vencido':'En evaluación',r.im)}</td><td>${rb(r.nv)}</span></td><td style="font-size:12px;color:var(--muted)">${r.ct}</td><td style="font-size:12px">${r.rs}</td></tr>`).join('');
+}
+function rEvids(){
+  document.getElementById('etb').innerHTML=evids.map(e=>`<tr><td class="mono" style="font-size:11px;color:var(--accent)">${e.n}</td><td class="mono" style="font-size:11px">${e.c}</td><td>${fp(e.p)}</td><td style="font-size:12px">${e.u}</td><td style="font-size:12px;color:var(--muted)">${e.f}</td><td><span class="badge bz">${e.v}</span></td><td style="font-size:12px;color:var(--muted)">${e.t}</td></tr>`).join('');
+}
+function rHeat(){
+  const cells=[[1,0,2,3],[0,1,2,1],[0,0,1,0],[0,0,0,1]];
+  const pl=['Baja','Media','Alta','Muy alta'];
+  const il=['Bajo','Medio','Alto','Muy alto'];
+  let h='<div style="display:grid;grid-template-columns:44px repeat(4,1fr);grid-template-rows:repeat(4,44px) 28px;gap:3px">';
+  for(let p=3;p>=0;p--){
+    h+=`<div style="display:flex;align-items:center;font-size:9px;color:var(--muted);padding-right:4px;text-align:right">${pl[p]}</div>`;
+    for(let i=0;i<4;i++){
+      const n=cells[3-p][i];
+      const lv=p+i;
+      const col=lv<=1?'#6ee7b7':lv<=3?'var(--warn)':lv<=5?'var(--danger)':'#991b1b';
+      h+=`<div style="background:${col};opacity:${n>0?1:0.15};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:rgba(0,0,0,0.7)">${n>0?n:''}</div>`;
+    }
+  }
+  h+='<div></div>';
+  for(let i=0;i<4;i++) h+=`<div style="display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted)">${il[i]}</div>`;
+  h+='</div><div style="text-align:center;font-size:9px;color:var(--muted);margin-top:4px">Impacto →</div>';
+  document.getElementById('hmap').innerHTML=h;
+}
+function rLey(){
+  const items=[
+    {ok:true,txt:'Modelo de prevención documentado'},
+    {ok:true,txt:'Encargado de prevención designado'},
+    {ok:true,txt:'Canal de denuncias anónimo activo'},
+    {ok:false,txt:'Capacitación lavado de activos — pendiente'},
+    {ok:false,txt:'Supervisión periódica del modelo — pendiente'},
+  ];
+  document.getElementById('leyc').innerHTML=items.map(i=>`<div style="display:flex;gap:8px;align-items:center;font-size:13px"><span class="badge ${i.ok?'bg':'bd'}" style="flex-shrink:0">${i.ok?'✓':'✗'}</span><span style="color:${i.ok?'var(--text)':'var(--muted)'}">${i.txt}</span></div>`).join('');
+}
+
+// ===== ACTIONS =====
+function vCaso(i){
+  const c=casos[i];
+  document.getElementById('det-cod').textContent=c.c;
+  document.getElementById('det-sub').textContent=`Registrado: ${c.f} · ${fp(c.p)} · Área: ${c.a}`;
+  document.getElementById('det-body').innerHTML=`
+    <div class="df"><span class="dk">Tipo de riesgo</span>${eb(c.t)}</div>
+    <div class="df"><span class="dk">Estado actual</span>${eb(c.e)}</div>
+    <div class="df"><span class="dk">Responsable</span>${c.r}</div>
+    <div class="df"><span class="dk">Evidencia</span><span style="color:${c.ev==='Sin evidencia'?'var(--danger)':'var(--accent2)'}">${c.ev}</span></div>
+    <div style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;font-size:13px;color:var(--muted);line-height:1.6">${c.d}</div>`;
+  document.getElementById('det-acts').innerHTML=['Recibido','En evaluación','En investigación','Cerrado'].map(e=>`<button class="btn ${c.e===e?'btn-p':'btn-g'} btn-sm" onclick="chEst(${i},'${e}')">${e}</button>`).join('');
+  om('mdet');
+}
+function chEst(i,e){casos[i].e=e;rCasos();rDash();cm('mdet');ntf(`Estado actualizado: ${e}`);}
+function vCons(i){const q=cons[i];ntf(`Respondiendo consulta ${q.c}...`);}
+function uc(){const p=document.getElementById('cp').value;document.getElementById('nc').textContent=`CMP-${p}-2026-0${nn}`}
+
+// ===== SAVE =====
+function gCaso(){
+  const p=document.getElementById('cp').value,t=document.getElementById('ct2').value,a=document.getElementById('ca').value,d=document.getElementById('cdesc').value,ev=document.getElementById('cev').value||'Sin evidencia';
+  if(!d){ntf('La descripción es obligatoria','err');return;}
+  const cod=`CMP-${p}-2026-0${nn++}`;
+  casos.unshift({c:cod,f:td(),p,t,a,e:'Recibido',r:`Officer ${p}`,ev,d});
+  rCasos();rDash();
+  document.getElementById('m1').textContent=casos.filter(c=>c.e!=='Cerrado').length;
+  document.getElementById('bc').textContent=casos.filter(c=>c.e!=='Cerrado').length;
+  cm('mcaso');document.getElementById('cdesc').value='';document.getElementById('cev').value='';
+  ntf(`Caso ${cod} registrado correctamente`);
+}
+function gCons(){
+  const n=document.getElementById('qn').value,p=document.getElementById('qp').value,t=document.getElementById('qt').value,a=document.getElementById('qa').value,cl=document.getElementById('qc').value||'-',d=document.getElementById('qd').value;
+  if(!n||!d){ntf('Nombre y descripción son obligatorios','err');return;}
+  const cod=`QRY-${p}-2026-0${nq++}`;
+  const dl=new Date();dl.setDate(dl.getDate()+2);
+  const lim=dl.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  cons.unshift({c:cod,s:n,a,t,p,cl,e:'Recibido',l:lim,d});
+  rCons();
+  document.getElementById('m2').textContent=cons.filter(q=>q.e!=='Respondido').length;
+  document.getElementById('bq').textContent=cons.filter(q=>q.e!=='Respondido').length;
+  cm('mcons');['qn','qc','qd'].forEach(id=>document.getElementById(id).value='');
+  ntf(`Consulta ${cod} registrada · SLA: ${lim}`);
+}
+function gCtr(){
+  const p=document.getElementById('rp').value,t=document.getElementById('rt').value,cl=document.getElementById('rc').value,f=document.getElementById('rf').value;
+  if(!cl||!f){ntf('Cliente y archivo son obligatorios','err');return;}
+  const cod=`CTR-${p}-2026-0${nctr++}`;
+  ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso'});
+  rCtrs();
+  document.getElementById('m3').textContent=ctrs.filter(c=>c.e==='En revisión').length;
+  cm('mctr');['rc','rf','rn'].forEach(id=>document.getElementById(id).value='');
+  ntf(`Contrato ${cod} enviado a análisis IA · Informe por email`);
+}
+function gRisk(){
+  const n=document.getElementById('rn2').value;
+  if(!n){ntf('La descripción es obligatoria','err');return;}
+  const pr=document.getElementById('rpr').value,im=document.getElementById('rim').value;
+  let nv='Bajo';
+  if(pr==='Alta'&&(im==='Alto'||im==='Muy alto')) nv='Crítico';
+  else if(pr==='Alta'||im==='Alto'||im==='Muy alto') nv='Alto';
+  else if(pr==='Media'||im==='Medio') nv='Medio';
+  risks.unshift({n,p:document.getElementById('rp2').value,a:document.getElementById('ra').value,pr,im,nv,ct:document.getElementById('rct').value||'Por definir',rs:document.getElementById('rrs').value||'Sin asignar'});
+  rRisks();rHeat();cm('mrisk');
+  ['rn2','rct','rrs'].forEach(id=>document.getElementById(id).value='');
+  ntf(`Riesgo registrado · Nivel: ${nv}`);
+}
+function gEv(){
+  const n=document.getElementById('en').value;
+  if(!n){ntf('El nombre del documento es obligatorio','err');return;}
+  evids.unshift({n,c:document.getElementById('ec').value||'-',p:document.getElementById('ep').value,u:'Compliance Officer',f:td(),v:'v1',t:document.getElementById('et').value});
+  rEvids();cm('mev');document.getElementById('en').value='';document.getElementById('ec').value='';
+  ntf('Documento registrado en repositorio inmutable');
+}
+
+// ===== CLOCK =====
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}
+setInterval(tick,1000);tick();
+
+// ===== INIT =====
+document.getElementById('fdate').textContent=new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('nf').textContent=td();
+rDash();rCasos();rCons();rCtrs();rRisks();rEvids();rHeat();rLey();
+
+
+// ===== CAPACITACIONES DATA =====
+let caps=[
+  {n:'Prevención Lavado de Activos',t:'Obligatoria (Ley)',p:'CL',a:'Todas las áreas',f:'15/03/2026',part:28,cal:88,e:'Completada',mod:'Presencial',h:4,inst:'Officer CL'},
+  {n:'Compliance y Ética Empresarial',t:'Obligatoria (Interna)',p:'PE',a:'Comercial',f:'20/03/2026',part:15,cal:92,e:'Completada',mod:'Virtual sincrónica',h:3,inst:'Officer PE'},
+  {n:'Manejo de Contratos - BTL',t:'Obligatoria (Interna)',p:'CO',a:'Comercial',f:'05/04/2026',part:12,cal:78,e:'Completada',mod:'E-learning',h:2,inst:'Plataforma interna'},
+  {n:'Política Antisoborno ISO 37001',t:'Obligatoria (Ley)',p:'Todos',a:'Gerencia',f:'22/04/2026',part:8,cal:95,e:'Completada',mod:'Presencial',h:6,inst:'Consultor externo'},
+  {n:'Protección de Datos Personales',t:'Obligatoria (Ley)',p:'PE',a:'RRHH',f:'10/05/2026',part:22,cal:82,e:'Completada',mod:'E-learning',h:2,inst:'Plataforma interna'},
+  {n:'Manejo de Conflictos de Interés',t:'Obligatoria (Interna)',p:'CL',a:'Operaciones',f:'18/06/2026',part:0,cal:0,e:'Programada',mod:'Presencial',h:3,inst:'Officer CL'},
+  {n:'Prevención Lavado de Activos',t:'Obligatoria (Ley)',p:'CO',a:'Todas las áreas',f:'25/06/2026',part:0,cal:0,e:'Programada',mod:'Virtual sincrónica',h:4,inst:'Officer CO'},
+  {n:'Canal de Denuncias - Protocolo',t:'Obligatoria (Interna)',p:'PE',a:'Todas las áreas',f:'10/07/2026',part:0,cal:0,e:'Programada',mod:'E-learning',h:1,inst:'Plataforma interna'},
+  {n:'Ley 20.393 - Delitos Empresariales',t:'Obligatoria (Ley)',p:'CL',a:'Todas las áreas',f:'15/07/2026',part:0,cal:0,e:'Pendiente',mod:'Presencial',h:8,inst:'Abogado externo'},
+  {n:'Gestión de Riesgos Operacionales',t:'Voluntaria',p:'CO',a:'Operaciones',f:'12/03/2026',part:9,cal:65,e:'Completada',mod:'Virtual sincrónica',h:2,inst:'Officer CO'},
+];
+
+// ===== AUDITORIAS DATA =====
+let auds=[
+  {c:'AUD-PE-2026-001',n:'Auditoría contratos comerciales Q1',t:'Interna',p:'PE',a:'Comercial',fi:'10/01/2026',ff:'28/01/2026',r:'Officer PE',hall:3,e:'Completada'},
+  {c:'AUD-CL-2026-002',n:'Revisión Ley 20.393 - procesos RRHH',t:'Regulatoria',p:'CL',a:'RRHH',fi:'15/02/2026',ff:'05/03/2026',r:'Auditor Externo',hall:5,e:'Completada'},
+  {c:'AUD-CO-2026-003',n:'Auditoría financiera - márgenes y NC',t:'Interna',p:'CO',a:'Finanzas',fi:'01/03/2026',ff:'20/03/2026',r:'CFO CO',hall:2,e:'Completada'},
+  {c:'AUD-PE-2026-004',n:'Cumplimiento política antisoborno',t:'Interna',p:'PE',a:'Todas',fi:'15/04/2026',ff:'30/04/2026',r:'Officer PE',hall:1,e:'Completada'},
+  {c:'AUD-CL-2026-005',n:'Controles de outsourcing - pickers',t:'Externa',p:'CL',a:'Operaciones',fi:'05/05/2026',ff:'25/05/2026',r:'Deloitte CL',hall:0,e:'Completada'},
+  {c:'AUD-PE-2026-006',n:'Revisión canal de denuncias',t:'Interna',p:'PE',a:'Compliance',fi:'01/06/2026',ff:'30/06/2026',r:'Officer PE',hall:2,e:'En curso'},
+  {c:'AUD-CO-2026-007',n:'Auditoría contratos Falabella y Éxito',t:'Interna',p:'CO',a:'Comercial',fi:'10/06/2026',ff:'10/07/2026',r:'Officer CO',hall:4,e:'En curso'},
+  {c:'AUD-CL-2026-008',n:'Cumplimiento Ley 20.393 Q2',t:'Regulatoria',p:'CL',a:'Todas',fi:'01/08/2026',ff:'31/08/2026',r:'CMF Chile',hall:0,e:'Programada'},
+  {c:'AUD-PE-2026-009',n:'Auditoría integral compliance anual',t:'Externa',p:'PE',a:'Todas',fi:'01/09/2026',ff:'30/09/2026',r:'PWC Perú',hall:0,e:'Programada'},
+];
+let naud=10;
+
+// ===== RENDER MAPA =====
+function rMapa(){
+  const filter=document.getElementById('mapa-filter')?document.getElementById('mapa-filter').value:'';
+  // Per-country risk scoring
+  const paises=[
+    {code:'PE',flag:'🇵🇪',name:'Perú',crit:3,alto:2,med:1,bajo:1,color:'var(--accent)'},
+    {code:'CL',flag:'🇨🇱',name:'Chile',crit:2,alto:1,med:2,bajo:1,color:'var(--purple)'},
+    {code:'CO',flag:'🇨🇴',name:'Colombia',crit:2,alto:2,med:1,bajo:0,color:'var(--accent2)'},
+  ];
+  document.getElementById('mapa-cards').innerHTML=paises.map(p=>{
+    const total=p.crit+p.alto+p.med+p.bajo;
+    const score=Math.round((p.crit*4+p.alto*3+p.med*2+p.bajo)/total*10)/10;
+    const nivel=score>=3.5?'Crítico':score>=2.5?'Alto':score>=1.5?'Medio':'Bajo';
+    const ncol=nivel==='Crítico'?'var(--danger)':nivel==='Alto'?'var(--warn)':nivel==='Medio'?'var(--accent)':'var(--accent2)';
+    return`<div class="card" style="border-top:3px solid ${ncol}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div><div style="font-size:22px;margin-bottom:4px">${p.flag}</div><div style="font-size:15px;font-weight:600">${p.name}</div></div>
+        <div style="text-align:right"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Nivel de riesgo</div><span class="badge ${nivel==='Crítico'?'bd':nivel==='Alto'?'bw':nivel==='Medio'?'bb':'bg'}">${nivel}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:var(--danger)">● Crítico</span><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:5px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--danger);width:${p.crit/Math.max(p.crit,3)*100}%"></div></div><span style="font-size:12px;font-weight:600;color:var(--danger)">${p.crit}</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:var(--warn)">● Alto</span><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:5px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--warn);width:${p.alto/Math.max(p.crit,3)*100}%"></div></div><span style="font-size:12px;font-weight:600;color:var(--warn)">${p.alto}</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:var(--accent)">● Medio</span><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:5px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--accent);width:${p.med/Math.max(p.crit,3)*100}%"></div></div><span style="font-size:12px;font-weight:600;color:var(--accent)">${p.med}</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:var(--accent2)">● Bajo</span><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:5px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--accent2);width:${p.bajo/Math.max(p.crit,3)*100}%"></div></div><span style="font-size:12px;font-weight:600;color:var(--accent2)">${p.bajo}</span></div></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>${total} riesgos identificados</span><span style="color:${ncol};font-weight:600">Score: ${score}/4</span></div>
+    </div>`;
+  }).join('');
+
+  // Areas chart
+  const areas={Finanzas:{n:3,col:'var(--warn)'},Comercial:{n:3,col:'var(--accent)'},Legal:{n:2,col:'var(--purple)'},RRHH:{n:2,col:'var(--accent2)'},Operaciones:{n:1,col:'var(--muted)'}};
+  const maxA=Math.max(...Object.values(areas).map(a=>a.n));
+  document.getElementById('mapa-areas').innerHTML=Object.entries(areas).map(([name,data])=>`
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">${name}</span><span style="font-weight:600;color:${data.col}">${data.n} riesgos</span></div>
+    <div class="pb"><div class="pf" style="width:${data.n/maxA*100}%;background:${data.col}"></div></div></div>`).join('');
+
+  // Trend bars
+  const meses=['Ene','Feb','Mar','Abr','May','Jun'];
+  const vals=[2,3,4,3,5,4];
+  const maxV=Math.max(...vals);
+  document.getElementById('mapa-trend').innerHTML=meses.map((m,i)=>`
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+      <span style="font-size:10px;font-weight:600;color:${vals[i]>=4?'var(--danger)':'var(--muted)'}">${vals[i]}</span>
+      <div style="width:100%;background:${vals[i]>=4?'var(--danger)':vals[i]>=3?'var(--warn)':'var(--accent)'};border-radius:4px 4px 0 0;height:${vals[i]/maxV*90}px"></div>
+      <span style="font-size:10px;color:var(--muted)">${m}</span>
+    </div>`).join('');
+
+  // Detail table
+  document.getElementById('mapa-tb').innerHTML=risks.map(r=>`
+    <tr>
+      <td>${{PE:'🇵🇪 PE',CL:'🇨🇱 CL',CO:'🇨🇴 CO',Todos:'🌎 Todos','PE/CO':'🇵🇪🇨🇴'}[r.p]||r.p}</td>
+      <td style="font-weight:500;font-size:13px">${r.n}</td>
+      <td style="font-size:12px;color:var(--muted)">${r.a}</td>
+      <td>${rb(r.nv)}</span></td>
+      <td><span class="badge ${r.pr==='Alta'?'bd':r.pr==='Media'?'bw':'bg'}">${r.pr}</span></td>
+      <td><span class="badge ${r.im.includes('Alto')?'bd':'bb'}">${r.im}</span></td>
+      <td style="font-size:12px;color:var(--muted);max-width:160px">${r.ct}</td>
+      <td><span class="badge ${r.nv==='Bajo'||r.nv==='Medio'?'bg':'bw'}">${r.nv==='Bajo'?'Implementado':r.nv==='Medio'?'En proceso':'Reforzar'}</span></td>
+    </tr>`).join('');
+}
+
+// ===== RENDER CAPACITACIONES =====
+function rCap(){
+  const comp=caps.filter(c=>c.e==='Completada').length;
+  const prog=caps.filter(c=>c.e==='Programada'||c.e==='Pendiente').length;
+  document.getElementById('cap-m1').textContent=comp;
+  document.getElementById('cap-m2').textContent=prog;
+
+  // Coverage per country
+  const cov=[
+    {p:'🇵🇪 Perú',done:caps.filter(c=>(c.p==='PE'||c.p==='Todos')&&c.e==='Completada').length,total:caps.filter(c=>c.p==='PE'||c.p==='Todos').length,col:'var(--accent)'},
+    {p:'🇨🇱 Chile',done:caps.filter(c=>(c.p==='CL'||c.p==='Todos')&&c.e==='Completada').length,total:caps.filter(c=>c.p==='CL'||c.p==='Todos').length,col:'var(--purple)'},
+    {p:'🇨🇴 Colombia',done:caps.filter(c=>(c.p==='CO'||c.p==='Todos')&&c.e==='Completada').length,total:caps.filter(c=>c.p==='CO'||c.p==='Todos').length,col:'var(--accent2)'},
+  ];
+  document.getElementById('cap-cov').innerHTML=cov.map(c=>`
+    <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>${c.p}</span><span style="color:var(--muted);font-size:12px">${c.done} / ${c.total} completadas · <span style="color:${c.col};font-weight:600">${c.total>0?Math.round(c.done/c.total*100):0}%</span></span></div>
+    <div class="pb"><div class="pf" style="width:${c.total>0?c.done/c.total*100:0}%;background:${c.col}"></div></div></div>`).join('');
+
+  // Proximas
+  const prox=caps.filter(c=>c.e==='Programada'||c.e==='Pendiente').slice(0,4);
+  document.getElementById('cap-prox').innerHTML=prox.map(c=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border-radius:8px">
+      <div style="width:36px;height:36px;border-radius:8px;background:rgba(79,142,247,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">${{PE:'🇵🇪',CL:'🇨🇱',CO:'🇨🇴',Todos:'🌎'}[c.p]}</div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.n}</div><div style="font-size:11px;color:var(--muted)">${c.f} · ${c.h}h · ${c.mod}</div></div>
+      <span class="badge ${c.e==='Pendiente'?'bd':'bw'}">${c.e}</span>
+    </div>`).join('');
+
+  // Table
+  document.getElementById('cap-tb').innerHTML=caps.map((c,i)=>`
+    <tr>
+      <td style="font-weight:500;font-size:13px">${c.n}</td>
+      <td><span class="badge ${c.t.includes('Ley')?'bd':'bb'}">${c.t}</span></td>
+      <td>${{PE:'🇵🇪 PE',CL:'🇨🇱 CL',CO:'🇨🇴 CO',Todos:'🌎 Todos'}[c.p]||c.p}</td>
+      <td style="font-size:12px;color:var(--muted)">${c.a}</td>
+      <td style="font-size:12px;color:var(--muted)">${c.f}</td>
+      <td style="font-size:12px">${c.e==='Completada'?c.part+' personas':'—'}</td>
+      <td>${c.e==='Completada'?`<span style="color:${c.cal>=80?'var(--accent2)':c.cal>=70?'var(--warn)':'var(--danger)'};font-weight:600">${c.cal}%</span>`:'—'}</td>
+      <td><span class="badge ${c.e==='Completada'?'bg':c.e==='Programada'?'bb':'bw'}">${c.e}</span></td>
+      <td><button class="btn btn-g btn-sm" onclick="verCap(${i})">Ver →</button></td>
+    </tr>`).join('');
+}
+
+// ===== RENDER AUDITORIAS =====
+function rAud(){
+  // Hallazgos por país
+  const hallData=[
+    {p:'🇵🇪 Perú',abiertos:5,cerrados:4,col:'var(--accent)'},
+    {p:'🇨🇱 Chile',abiertos:4,cerrados:6,col:'var(--purple)'},
+    {p:'🇨🇴 Colombia',abiertos:6,cerrados:2,col:'var(--accent2)'},
+  ];
+  document.getElementById('aud-hall-chart').innerHTML=hallData.map(h=>`
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+      <span>${h.p}</span>
+      <span><span style="color:var(--danger);font-weight:600">${h.abiertos} abiertos</span> · <span style="color:var(--accent2)">${h.cerrados} cerrados</span></span>
+    </div>
+    <div style="display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden">
+      <div style="flex:${h.abiertos};background:var(--danger)"></div>
+      <div style="flex:${h.cerrados};background:var(--accent2)"></div>
+    </div></div>`).join('');
+
+  // Proximas programadas
+  const prox=auds.filter(a=>a.e==='Programada');
+  document.getElementById('aud-prox').innerHTML=prox.map(a=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:8px">
+      <div style="font-size:18px">${{PE:'🇵🇪',CL:'🇨🇱',CO:'🇨🇴'}[a.p]}</div>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.n}</div><div style="font-size:11px;color:var(--muted)">${a.fi} · ${a.r}</div></div>
+      <span class="badge bb">${a.t}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:13px;padding:10px 0">Sin auditorías programadas próximas</div>';
+
+  // Table
+  document.getElementById('aud-tb').innerHTML=auds.map((a,i)=>`
+    <tr>
+      <td class="mono">${a.c}</td>
+      <td style="font-weight:500;font-size:13px;max-width:200px">${a.n}</td>
+      <td><span class="badge ${a.t==='Externa'?'bp':a.t==='Regulatoria'?'bd':'bb'}">${a.t}</span></td>
+      <td>${{PE:'🇵🇪 PE',CL:'🇨🇱 CL',CO:'🇨🇴 CO'}[a.p]||a.p}</td>
+      <td style="font-size:12px;color:var(--muted)">${a.fi}</td>
+      <td style="font-size:12px">${a.r}</td>
+      <td style="font-size:12px;font-weight:600;color:${a.hall>3?'var(--danger)':a.hall>0?'var(--warn)':'var(--accent2)'}">${a.hall} ${a.hall===1?'hallazgo':'hallazgos'}</td>
+      <td><span class="badge ${a.e==='Completada'?'bg':a.e==='En curso'?'bb':'bw'}">${a.e}</span></td>
+      <td><button class="btn btn-g btn-sm" onclick="verAud(${i})">Ver →</button></td>
+    </tr>`).join('');
+}
+
+// ===== SAVE CAPACITACION =====
+function gCap(){
+  const n=document.getElementById('cap-n').value;
+  if(!n){ntf('El nombre es obligatorio','err');return;}
+  caps.unshift({n,t:document.getElementById('cap-t').value,p:document.getElementById('cap-p').value,a:document.getElementById('cap-a').value,f:document.getElementById('cap-f').value||td(),part:0,cal:0,e:'Programada',mod:document.getElementById('cap-mod').value,h:document.getElementById('cap-h').value||2,inst:document.getElementById('cap-inst').value||'Por definir'});
+  rCap();cm('mcap');document.getElementById('cap-n').value='';document.getElementById('cap-inst').value='';
+  ntf('Capacitación registrada correctamente');
+}
+
+// ===== SAVE AUDITORIA =====
+let naudN=10;
+function uAudCod(){const p=document.getElementById('aud-p').value;document.getElementById('aud-cod-prev').textContent=`AUD-${p}-2026-0${naudN}`}
+function gAud(){
+  const n=document.getElementById('aud-n').value,r=document.getElementById('aud-r').value;
+  if(!n||!r){ntf('Nombre y auditor son obligatorios','err');return;}
+  const p=document.getElementById('aud-p').value;
+  const cod=`AUD-${p}-2026-0${naudN++}`;
+  auds.unshift({c:cod,n,t:document.getElementById('aud-t').value,p,a:document.getElementById('aud-a').value,fi:document.getElementById('aud-fi').value||td(),ff:document.getElementById('aud-ff').value||'Por definir',r,hall:0,e:'Programada'});
+  rAud();cm('maud');['aud-n','aud-r','aud-fi','aud-ff'].forEach(id=>document.getElementById(id).value='');
+  ntf(`Auditoría ${cod} registrada`);
+}
+
+function verCap(i){const c=caps[i];ntf(`Capacitación: ${c.n} · ${c.e}`);}
+function verAud(i){const a=auds[i];ntf(`Auditoría ${a.c}: ${a.hall} hallazgos · ${a.e}`);}
+
+// init new modules
+rMapa();rCap();rAud();
+
+document.querySelectorAll('.mo').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')})});
+</script>
+</body>
+</html>
