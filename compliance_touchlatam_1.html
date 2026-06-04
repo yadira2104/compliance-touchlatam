@@ -286,6 +286,7 @@ select.fi option{background:var(--bg3)}
     </div>
   </div>
 </div>
+
 <!-- MODALES -->
 <div class="mo" id="mcaso">
   <div class="mbox">
@@ -473,7 +474,6 @@ select.fi option{background:var(--bg3)}
   </div>
 </div>
 
-
 <!-- MODAL API KEY -->
 <div class="mo" id="mapikey">
   <div class="mbox">
@@ -489,7 +489,6 @@ select.fi option{background:var(--bg3)}
     </div>
   </div>
 </div>
-
 
 <!-- MODAL ANÁLISIS IA -->
 <div class="mo" id="modal-analisis-ia">
@@ -529,6 +528,10 @@ select.fi option{background:var(--bg3)}
 </div>
 
 <script>
+// ===== API KEY — DECLARACIÓN TEMPRANA (ANTES DE CUALQUIER USO) =====
+// ⚠️ CRÍTICO: debe ir al inicio del script, antes de loadAll() y del bloque INIT
+let CLAUDE_API_KEY = localStorage.getItem('tl_apikey') || '';
+
 // ===== DATA =====
 let casos=[
   {c:'CMP-PE-2026-014',f:'12/05/2026',p:'PE',t:'Fraude',a:'Finanzas',e:'En investigación',r:'Officer PE',ev:'3 archivos',d:'Posible manipulación de notas de crédito sin autorización doble.'},
@@ -575,7 +578,7 @@ let nn=15,nq=42,nctr=13;
 // ===== UTILS =====
 function fp(code){return{PE:'🇵🇪 PE',CL:'🇨🇱 CL',CO:'🇨🇴 CO'}[code]||code}
 function eb(e){
-  const m={'Recibido':'bw','En evaluación':'bb','En investigación':'bp','Cerrado':'bz','En proceso':'bb','Respondido':'bg','SLA Vencido':'bd','Vigente':'bg','En revisión':'bw','Pendiente firma':'bw','Completado':'bg','Contractual':'bb','Comercial':'bb','Legal':'bp','Operativa':'bz','Riesgos':'bw','Fraude':'bd','Laboral':'bw','Financiero':'bw','Conflicto de interés':'bp','Legal':'bp'};
+  const m={'Recibido':'bw','En evaluación':'bb','En investigación':'bp','Cerrado':'bz','En proceso':'bb','Respondido':'bg','SLA Vencido':'bd','Vigente':'bg','En revisión':'bw','Pendiente firma':'bw','Completado':'bg','Contractual':'bb','Comercial':'bb','Legal':'bp','Operativa':'bz','Riesgos':'bw','Fraude':'bd','Laboral':'bw','Financiero':'bw','Conflicto de interés':'bp'};
   return`<span class="badge ${m[e]||'bz'}">${e}</span>`
 }
 function rb(r){const m={Crítico:'bd',Alto:'bw',Medio:'bb',Bajo:'bg'};return`<span class="badge ${m[r]||'bz'}">${r}`}
@@ -697,7 +700,7 @@ function gCtr(){
   const p=document.getElementById('rp').value,t=document.getElementById('rt').value,cl=document.getElementById('rc').value,f=document.getElementById('rf').value;
   if(!cl||!f){ntf('Cliente y archivo son obligatorios','err');return;}
   const cod=`CTR-${p}-2026-0${nctr++}`;
-  const sol=document.getElementById('c-sol')?document.getElementById('c-sol').value:'';ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso',solicitante:sol,texto:'',aiResult:''});
+  ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso',solicitante:'',texto:'',aiResult:''});
   saveAll();
   rCtrs();
   document.getElementById('m3').textContent=ctrs.filter(c=>c.e==='En revisión').length;
@@ -731,14 +734,38 @@ function gEv(){
 function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}
 setInterval(tick,1000);tick();
 
+// ===== PERSISTENCIA =====
+function saveAll() {
+  try {
+    localStorage.setItem('tl_casos', JSON.stringify(casos));
+    localStorage.setItem('tl_cons', JSON.stringify(cons));
+    localStorage.setItem('tl_ctrs', JSON.stringify(ctrs));
+    localStorage.setItem('tl_risks', JSON.stringify(risks));
+    localStorage.setItem('tl_caps', JSON.stringify(caps));
+    localStorage.setItem('tl_auds', JSON.stringify(auds));
+    localStorage.setItem('tl_evids', JSON.stringify(evids));
+  } catch(e) { console.warn('Storage error:', e); }
+}
+function loadAll() {
+  try {
+    const c = localStorage.getItem('tl_casos'); if(c) casos = JSON.parse(c);
+    const q = localStorage.getItem('tl_cons'); if(q) cons = JSON.parse(q);
+    const ct = localStorage.getItem('tl_ctrs'); if(ct) ctrs = JSON.parse(ct);
+    const r = localStorage.getItem('tl_risks'); if(r) risks = JSON.parse(r);
+    const cp = localStorage.getItem('tl_caps'); if(cp) caps = JSON.parse(cp);
+    const a = localStorage.getItem('tl_auds'); if(a) auds = JSON.parse(a);
+    const ev = localStorage.getItem('tl_evids'); if(ev) evids = JSON.parse(ev);
+  } catch(e) { console.warn('Load error:', e); }
+}
+
 // ===== INIT =====
 document.getElementById('fdate').textContent=new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 document.getElementById('nf').textContent=td();
 loadAll();
 rDash();rCasos();rCons();rCtrs();rRisks();rEvids();rHeat();rLey();
+// Actualizar UI con API key (ya declarada al inicio del script)
 if(CLAUDE_API_KEY) document.getElementById('api-btn').textContent='🤖 API IA ✓';
 document.getElementById('api-key-input').value=CLAUDE_API_KEY;
-
 
 // ===== CAPACITACIONES DATA =====
 let caps=[
@@ -766,12 +793,10 @@ let auds=[
   {c:'AUD-CL-2026-008',n:'Cumplimiento Ley 20.393 Q2',t:'Regulatoria',p:'CL',a:'Todas',fi:'01/08/2026',ff:'31/08/2026',r:'CMF Chile',hall:0,e:'Programada'},
   {c:'AUD-PE-2026-009',n:'Auditoría integral compliance anual',t:'Externa',p:'PE',a:'Todas',fi:'01/09/2026',ff:'30/09/2026',r:'PWC Perú',hall:0,e:'Programada'},
 ];
-let naud=10;
+let naudN=10;
 
 // ===== RENDER MAPA =====
 function rMapa(){
-  const filter=document.getElementById('mapa-filter')?document.getElementById('mapa-filter').value:'';
-  // Per-country risk scoring
   const paises=[
     {code:'PE',flag:'🇵🇪',name:'Perú',crit:3,alto:2,med:1,bajo:1,color:'var(--accent)'},
     {code:'CL',flag:'🇨🇱',name:'Chile',crit:2,alto:1,med:2,bajo:1,color:'var(--purple)'},
@@ -796,15 +821,11 @@ function rMapa(){
       <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>${total} riesgos identificados</span><span style="color:${ncol};font-weight:600">Score: ${score}/4</span></div>
     </div>`;
   }).join('');
-
-  // Areas chart
   const areas={Finanzas:{n:3,col:'var(--warn)'},Comercial:{n:3,col:'var(--accent)'},Legal:{n:2,col:'var(--purple)'},RRHH:{n:2,col:'var(--accent2)'},Operaciones:{n:1,col:'var(--muted)'}};
   const maxA=Math.max(...Object.values(areas).map(a=>a.n));
   document.getElementById('mapa-areas').innerHTML=Object.entries(areas).map(([name,data])=>`
     <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">${name}</span><span style="font-weight:600;color:${data.col}">${data.n} riesgos</span></div>
     <div class="pb"><div class="pf" style="width:${data.n/maxA*100}%;background:${data.col}"></div></div></div>`).join('');
-
-  // Trend bars
   const meses=['Ene','Feb','Mar','Abr','May','Jun'];
   const vals=[2,3,4,3,5,4];
   const maxV=Math.max(...vals);
@@ -814,8 +835,6 @@ function rMapa(){
       <div style="width:100%;background:${vals[i]>=4?'var(--danger)':vals[i]>=3?'var(--warn)':'var(--accent)'};border-radius:4px 4px 0 0;height:${vals[i]/maxV*90}px"></div>
       <span style="font-size:10px;color:var(--muted)">${m}</span>
     </div>`).join('');
-
-  // Detail table
   document.getElementById('mapa-tb').innerHTML=risks.map(r=>`
     <tr>
       <td>${{PE:'🇵🇪 PE',CL:'🇨🇱 CL',CO:'🇨🇴 CO',Todos:'🌎 Todos','PE/CO':'🇵🇪🇨🇴'}[r.p]||r.p}</td>
@@ -835,8 +854,6 @@ function rCap(){
   const prog=caps.filter(c=>c.e==='Programada'||c.e==='Pendiente').length;
   document.getElementById('cap-m1').textContent=comp;
   document.getElementById('cap-m2').textContent=prog;
-
-  // Coverage per country
   const cov=[
     {p:'🇵🇪 Perú',done:caps.filter(c=>(c.p==='PE'||c.p==='Todos')&&c.e==='Completada').length,total:caps.filter(c=>c.p==='PE'||c.p==='Todos').length,col:'var(--accent)'},
     {p:'🇨🇱 Chile',done:caps.filter(c=>(c.p==='CL'||c.p==='Todos')&&c.e==='Completada').length,total:caps.filter(c=>c.p==='CL'||c.p==='Todos').length,col:'var(--purple)'},
@@ -845,8 +862,6 @@ function rCap(){
   document.getElementById('cap-cov').innerHTML=cov.map(c=>`
     <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>${c.p}</span><span style="color:var(--muted);font-size:12px">${c.done} / ${c.total} completadas · <span style="color:${c.col};font-weight:600">${c.total>0?Math.round(c.done/c.total*100):0}%</span></span></div>
     <div class="pb"><div class="pf" style="width:${c.total>0?c.done/c.total*100:0}%;background:${c.col}"></div></div></div>`).join('');
-
-  // Proximas
   const prox=caps.filter(c=>c.e==='Programada'||c.e==='Pendiente').slice(0,4);
   document.getElementById('cap-prox').innerHTML=prox.map(c=>`
     <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border-radius:8px">
@@ -854,8 +869,6 @@ function rCap(){
       <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.n}</div><div style="font-size:11px;color:var(--muted)">${c.f} · ${c.h}h · ${c.mod}</div></div>
       <span class="badge ${c.e==='Pendiente'?'bd':'bw'}">${c.e}</span>
     </div>`).join('');
-
-  // Table
   document.getElementById('cap-tb').innerHTML=caps.map((c,i)=>`
     <tr>
       <td style="font-weight:500;font-size:13px">${c.n}</td>
@@ -872,7 +885,6 @@ function rCap(){
 
 // ===== RENDER AUDITORIAS =====
 function rAud(){
-  // Hallazgos por país
   const hallData=[
     {p:'🇵🇪 Perú',abiertos:5,cerrados:4,col:'var(--accent)'},
     {p:'🇨🇱 Chile',abiertos:4,cerrados:6,col:'var(--purple)'},
@@ -887,8 +899,6 @@ function rAud(){
       <div style="flex:${h.abiertos};background:var(--danger)"></div>
       <div style="flex:${h.cerrados};background:var(--accent2)"></div>
     </div></div>`).join('');
-
-  // Proximas programadas
   const prox=auds.filter(a=>a.e==='Programada');
   document.getElementById('aud-prox').innerHTML=prox.map(a=>`
     <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:8px">
@@ -896,8 +906,6 @@ function rAud(){
       <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.n}</div><div style="font-size:11px;color:var(--muted)">${a.fi} · ${a.r}</div></div>
       <span class="badge bb">${a.t}</span>
     </div>`).join('') || '<div style="color:var(--muted);font-size:13px;padding:10px 0">Sin auditorías programadas próximas</div>';
-
-  // Table
   document.getElementById('aud-tb').innerHTML=auds.map((a,i)=>`
     <tr>
       <td class="mono">${a.c}</td>
@@ -917,13 +925,11 @@ function gCap(){
   const n=document.getElementById('cap-n').value;
   if(!n){ntf('El nombre es obligatorio','err');return;}
   caps.unshift({n,t:document.getElementById('cap-t').value,p:document.getElementById('cap-p').value,a:document.getElementById('cap-a').value,f:document.getElementById('cap-f').value||td(),part:0,cal:0,e:'Programada',mod:document.getElementById('cap-mod').value,h:document.getElementById('cap-h').value||2,inst:document.getElementById('cap-inst').value||'Por definir'});
-  saveAll();
-  rCap();cm('mcap');document.getElementById('cap-n').value='';document.getElementById('cap-inst').value='';
+  saveAll();rCap();cm('mcap');document.getElementById('cap-n').value='';document.getElementById('cap-inst').value='';
   ntf('Capacitación registrada correctamente');
 }
 
 // ===== SAVE AUDITORIA =====
-let naudN=10;
 function uAudCod(){const p=document.getElementById('aud-p').value;document.getElementById('aud-cod-prev').textContent=`AUD-${p}-2026-0${naudN}`}
 function gAud(){
   const n=document.getElementById('aud-n').value,r=document.getElementById('aud-r').value;
@@ -931,51 +937,23 @@ function gAud(){
   const p=document.getElementById('aud-p').value;
   const cod=`AUD-${p}-2026-0${naudN++}`;
   auds.unshift({c:cod,n,t:document.getElementById('aud-t').value,p,a:document.getElementById('aud-a').value,fi:document.getElementById('aud-fi').value||td(),ff:document.getElementById('aud-ff').value||'Por definir',r,hall:0,e:'Programada'});
-  saveAll();
-  rAud();cm('maud');['aud-n','aud-r','aud-fi','aud-ff'].forEach(id=>document.getElementById(id).value='');
+  saveAll();rAud();cm('maud');['aud-n','aud-r','aud-fi','aud-ff'].forEach(id=>document.getElementById(id).value='');
   ntf(`Auditoría ${cod} registrada`);
 }
 
 function verCap(i){const c=caps[i];ntf(`Capacitación: ${c.n} · ${c.e}`);}
 function verAud(i){const a=auds[i];ntf(`Auditoría ${a.c}: ${a.hall} hallazgos · ${a.e}`);}
 
-// init new modules
+// ===== INIT MÓDULOS NUEVOS =====
 rMapa();rCap();rAud();
 
-
-// ===== PERSISTENCIA DE DATOS =====
-function saveAll() {
-  try {
-    localStorage.setItem('tl_casos', JSON.stringify(casos));
-    localStorage.setItem('tl_cons', JSON.stringify(cons));
-    localStorage.setItem('tl_ctrs', JSON.stringify(ctrs));
-    localStorage.setItem('tl_risks', JSON.stringify(risks));
-    localStorage.setItem('tl_caps', JSON.stringify(caps));
-    localStorage.setItem('tl_auds', JSON.stringify(auds));
-    localStorage.setItem('tl_evids', JSON.stringify(evids));
-  } catch(e) { console.warn('Storage error:', e); }
-}
-
-function loadAll() {
-  try {
-    const c = localStorage.getItem('tl_casos'); if(c) casos = JSON.parse(c);
-    const q = localStorage.getItem('tl_cons'); if(q) cons = JSON.parse(q);
-    const ct = localStorage.getItem('tl_ctrs'); if(ct) ctrs = JSON.parse(ct);
-    const r = localStorage.getItem('tl_risks'); if(r) risks = JSON.parse(r);
-    const cp = localStorage.getItem('tl_caps'); if(cp) caps = JSON.parse(cp);
-    const a = localStorage.getItem('tl_auds'); if(a) auds = JSON.parse(a);
-    const ev = localStorage.getItem('tl_evids'); if(ev) evids = JSON.parse(ev);
-  } catch(e) { console.warn('Load error:', e); }
-}
-
 // ===== API KEY =====
-let CLAUDE_API_KEY = localStorage.getItem('tl_apikey') || '';
 function saveApiKey() {
   CLAUDE_API_KEY = document.getElementById('api-key-input').value.trim();
   localStorage.setItem('tl_apikey', CLAUDE_API_KEY);
   document.getElementById('api-btn').textContent = CLAUDE_API_KEY ? '🤖 API IA ✓' : '🤖 API IA';
   cm('mapikey');
-  ntf('API Key guardada correctamente');
+  ntf('API Key guardada correctamente ✓');
 }
 
 // ===== ANÁLISIS IA DE CONTRATOS =====
@@ -1014,7 +992,6 @@ async function analizarContrato(texto, paisCode) {
   }
 }
 
-// Modal análisis IA
 let currentCtrIdx = -1;
 async function verAnalisisIA(i) {
   currentCtrIdx = i;
@@ -1026,7 +1003,6 @@ async function verAnalisisIA(i) {
   document.getElementById('ia-tipo').textContent = c.t;
   document.getElementById('ia-solicitante').textContent = c.solicitante || '-';
   const resultDiv = document.getElementById('ia-result');
-  
   if (c.aiResult) {
     resultDiv.innerHTML = c.aiResult;
   } else {
@@ -1043,11 +1019,8 @@ async function ejecutarAnalisis() {
   btn.disabled = true;
   btn.textContent = '⏳ Analizando...';
   resultDiv.innerHTML = '<div style="text-align:center;padding:32px"><div style="width:32px;height:32px;border:2px solid rgba(255,255,255,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div><div style="color:var(--muted)">Claude está analizando con legislación ' + (c.p === 'PE' ? 'peruana' : c.p === 'CL' ? 'chilena (Ley 20.393)' : 'colombiana') + '...</div></div>';
-  
-  // Get contract text from input if available
   const textoInput = document.getElementById('ia-texto');
   const texto = textoInput ? textoInput.value : (c.texto || '');
-  
   const result = await analizarContrato(texto, c.p);
   if (result) {
     resultDiv.innerHTML = result;
