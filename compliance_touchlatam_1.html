@@ -113,7 +113,8 @@ select.fi option{background:var(--bg3)}
     <div class="cpill" onclick="fc(this,'CO')">🇨🇴 Colombia</div>
   </div>
   <div style="font-size:12px;color:var(--muted);font-family:var(--mono)" id="clk"></div>
-  <div class="avatar">CO</div>
+  <button onclick="om('mapikey')" style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.25);color:var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)" id="api-btn">🤖 API IA</button>
+<div class="avatar">CO</div>
 </header>
 
 <aside class="sidebar">
@@ -238,7 +239,7 @@ select.fi option{background:var(--bg3)}
     <div><div class="pt">Revisión de Contratos</div><div class="ps">Análisis IA · Cláusulas críticas · Historial</div></div>
     <button class="btn btn-p btn-sm" onclick="om('mctr')">+ Subir contrato</button>
   </div>
-  <div class="card" style="padding:0;margin-bottom:14px"><table class="t"><thead><tr><th>Código</th><th>Cliente</th><th>País</th><th>Tipo</th><th>Nivel de riesgo</th><th>Cláusulas críticas</th><th>Estado</th><th>Análisis</th></tr></thead><tbody id="ctrtb"></tbody></table></div>
+  <div class="card" style="padding:0;margin-bottom:14px"><table class="t"><thead><tr><th>Código</th><th>Cliente</th><th>País</th><th>Tipo</th><th>Nivel de riesgo</th><th>Cláusulas críticas</th><th>Estado</th><th>Análisis</th><th>IA</th></tr></thead><tbody id="ctrtb"></tbody></table></div>
   <div class="card" style="background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)"><div style="display:flex;align-items:center;gap:10px;font-size:13px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg><span style="color:var(--accent);font-weight:500">Análisis automático con IA:</span><span style="color:var(--muted)">Al subir el contrato, el sistema detecta cláusulas de penalidad, responsabilidad, exclusividad y terminación. El informe llega por email al solicitante en &lt; 5 minutos.</span></div></div>
 </div>
 
@@ -472,6 +473,58 @@ select.fi option{background:var(--bg3)}
   </div>
 </div>
 
+
+<!-- MODAL API KEY -->
+<div class="mo" id="mapikey">
+  <div class="mbox">
+    <div class="mh"><div class="mt">🤖 Configurar API de Claude (IA)</div><button class="mc2" onclick="cm('mapikey')">×</button></div>
+    <div class="fg"><label class="fl">API Key de Claude (Anthropic)</label>
+    <input class="fi" type="password" id="api-key-input" placeholder="sk-ant-api03-..."></div>
+    <div style="background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.2);border-radius:8px;padding:10px;font-size:12px;color:#90b8ff;margin-bottom:14px">
+      Obtén tu key gratuita en <strong>console.anthropic.com</strong>. Se guarda en tu navegador. Costo aproximado: $0.03 por contrato analizado.
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="cm('mapikey')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveApiKey()">Guardar API Key</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL ANÁLISIS IA -->
+<div class="mo" id="modal-analisis-ia">
+  <div class="mbox" style="width:700px;max-width:95vw">
+    <div class="mh">
+      <div>
+        <div class="mt" id="ia-titulo">Análisis IA de Contrato</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">
+          <span id="ia-pais"></span> · <span id="ia-tipo"></span> · Solicitante: <span id="ia-solicitante"></span>
+        </div>
+      </div>
+      <button class="mc2" onclick="cm('modal-analisis-ia')">×</button>
+    </div>
+    <div class="fg">
+      <label class="fl">Texto del contrato (opcional — pega aquí para análisis real)</label>
+      <textarea class="fi" id="ia-texto" style="min-height:80px" placeholder="Pega el texto del contrato aquí para un análisis real. Si lo dejas vacío, Claude generará un análisis de riesgos típicos para este tipo de contrato y país."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-p" id="btn-analizar" onclick="ejecutarAnalisis()">🤖 Analizar con IA</button>
+      <button class="btn btn-g" onclick="cm('modal-analisis-ia')">Cerrar</button>
+    </div>
+    <div id="ia-result" style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;max-height:450px;overflow-y:auto">
+      <div style="text-align:center;padding:32px;color:var(--muted)">Haz clic en "Analizar con IA" para generar el informe</div>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+#ia-result h3{font-size:14px;color:var(--accent);margin:12px 0 6px;border-bottom:1px solid var(--border);padding-bottom:4px}
+#ia-result h3:first-child{margin-top:0}
+#ia-result ul{padding-left:16px;margin:6px 0}
+#ia-result li{margin-bottom:4px;color:var(--muted)}
+#ia-result strong{color:var(--text)}
+</style>
+
 </main>
 </div>
 
@@ -557,7 +610,7 @@ function rCons(){
   document.getElementById('sla-al').innerHTML=v?`<div class="al d"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg><strong>${v} consulta(s) con SLA vencido</strong> — Respuesta inmediata requerida</div>`:'';
 }
 function rCtrs(){
-  document.getElementById('ctrtb').innerHTML=ctrs.map(c=>`<tr><td class="mono">${c.c}</td><td style="font-weight:500">${c.cl}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.t}</td><td>${rb(c.r)}</span></td><td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)';max-width:160px}">${c.cls}</td><td>${eb(c.e)}</td><td>${eb(c.an)}</td></tr>`).join('');
+  document.getElementById('ctrtb').innerHTML=ctrs.map((c,i)=>`<tr><td class="mono">${c.c}</td><td style="font-weight:500">${c.cl}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.t}</td><td>${rb(c.r)}</span></td><td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)';max-width:160px}">${c.cls}</td><td>${eb(c.e)}</td><td>${eb(c.an)}</td><td><button class='btn btn-g btn-sm' onclick='verAnalisisIA(${i})' style='white-space:nowrap'>${c.aiResult ? '📋 Ver análisis' : '🤖 Analizar IA'}</button></td></tr>`).join('');
 }
 function rRisks(){
   document.getElementById('rtb').innerHTML=risks.map(r=>`<tr><td style="font-weight:500;max-width:180px;font-size:13px">${r.n}</td><td style="font-size:12px">${r.p}</td><td>${eb(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado').replace(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado',r.pr)}</td><td>${eb(r.im.includes('Alto')?'SLA Vencido':'En evaluación').replace(r.im.includes('Alto')?'SLA Vencido':'En evaluación',r.im)}</td><td>${rb(r.nv)}</span></td><td style="font-size:12px;color:var(--muted)">${r.ct}</td><td style="font-size:12px">${r.rs}</td></tr>`).join('');
@@ -609,7 +662,7 @@ function vCaso(i){
   document.getElementById('det-acts').innerHTML=['Recibido','En evaluación','En investigación','Cerrado'].map(e=>`<button class="btn ${c.e===e?'btn-p':'btn-g'} btn-sm" onclick="chEst(${i},'${e}')">${e}</button>`).join('');
   om('mdet');
 }
-function chEst(i,e){casos[i].e=e;rCasos();rDash();cm('mdet');ntf(`Estado actualizado: ${e}`);}
+function chEst(i,e){casos[i].e=e;saveAll();rCasos();rDash();cm('mdet');ntf(`Estado actualizado: ${e}`);}
 function vCons(i){const q=cons[i];ntf(`Respondiendo consulta ${q.c}...`);}
 function uc(){const p=document.getElementById('cp').value;document.getElementById('nc').textContent=`CMP-${p}-2026-0${nn}`}
 
@@ -619,6 +672,7 @@ function gCaso(){
   if(!d){ntf('La descripción es obligatoria','err');return;}
   const cod=`CMP-${p}-2026-0${nn++}`;
   casos.unshift({c:cod,f:td(),p,t,a,e:'Recibido',r:`Officer ${p}`,ev,d});
+  saveAll();
   rCasos();rDash();
   document.getElementById('m1').textContent=casos.filter(c=>c.e!=='Cerrado').length;
   document.getElementById('bc').textContent=casos.filter(c=>c.e!=='Cerrado').length;
@@ -632,6 +686,7 @@ function gCons(){
   const dl=new Date();dl.setDate(dl.getDate()+2);
   const lim=dl.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
   cons.unshift({c:cod,s:n,a,t,p,cl,e:'Recibido',l:lim,d});
+  saveAll();
   rCons();
   document.getElementById('m2').textContent=cons.filter(q=>q.e!=='Respondido').length;
   document.getElementById('bq').textContent=cons.filter(q=>q.e!=='Respondido').length;
@@ -642,7 +697,8 @@ function gCtr(){
   const p=document.getElementById('rp').value,t=document.getElementById('rt').value,cl=document.getElementById('rc').value,f=document.getElementById('rf').value;
   if(!cl||!f){ntf('Cliente y archivo son obligatorios','err');return;}
   const cod=`CTR-${p}-2026-0${nctr++}`;
-  ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso'});
+  const sol=document.getElementById('c-sol')?document.getElementById('c-sol').value:'';ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso',solicitante:sol,texto:'',aiResult:''});
+  saveAll();
   rCtrs();
   document.getElementById('m3').textContent=ctrs.filter(c=>c.e==='En revisión').length;
   cm('mctr');['rc','rf','rn'].forEach(id=>document.getElementById(id).value='');
@@ -657,6 +713,7 @@ function gRisk(){
   else if(pr==='Alta'||im==='Alto'||im==='Muy alto') nv='Alto';
   else if(pr==='Media'||im==='Medio') nv='Medio';
   risks.unshift({n,p:document.getElementById('rp2').value,a:document.getElementById('ra').value,pr,im,nv,ct:document.getElementById('rct').value||'Por definir',rs:document.getElementById('rrs').value||'Sin asignar'});
+  saveAll();
   rRisks();rHeat();cm('mrisk');
   ['rn2','rct','rrs'].forEach(id=>document.getElementById(id).value='');
   ntf(`Riesgo registrado · Nivel: ${nv}`);
@@ -665,6 +722,7 @@ function gEv(){
   const n=document.getElementById('en').value;
   if(!n){ntf('El nombre del documento es obligatorio','err');return;}
   evids.unshift({n,c:document.getElementById('ec').value||'-',p:document.getElementById('ep').value,u:'Compliance Officer',f:td(),v:'v1',t:document.getElementById('et').value});
+  saveAll();
   rEvids();cm('mev');document.getElementById('en').value='';document.getElementById('ec').value='';
   ntf('Documento registrado en repositorio inmutable');
 }
@@ -676,7 +734,10 @@ setInterval(tick,1000);tick();
 // ===== INIT =====
 document.getElementById('fdate').textContent=new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 document.getElementById('nf').textContent=td();
+loadAll();
 rDash();rCasos();rCons();rCtrs();rRisks();rEvids();rHeat();rLey();
+if(CLAUDE_API_KEY) document.getElementById('api-btn').textContent='🤖 API IA ✓';
+document.getElementById('api-key-input').value=CLAUDE_API_KEY;
 
 
 // ===== CAPACITACIONES DATA =====
@@ -856,6 +917,7 @@ function gCap(){
   const n=document.getElementById('cap-n').value;
   if(!n){ntf('El nombre es obligatorio','err');return;}
   caps.unshift({n,t:document.getElementById('cap-t').value,p:document.getElementById('cap-p').value,a:document.getElementById('cap-a').value,f:document.getElementById('cap-f').value||td(),part:0,cal:0,e:'Programada',mod:document.getElementById('cap-mod').value,h:document.getElementById('cap-h').value||2,inst:document.getElementById('cap-inst').value||'Por definir'});
+  saveAll();
   rCap();cm('mcap');document.getElementById('cap-n').value='';document.getElementById('cap-inst').value='';
   ntf('Capacitación registrada correctamente');
 }
@@ -869,6 +931,7 @@ function gAud(){
   const p=document.getElementById('aud-p').value;
   const cod=`AUD-${p}-2026-0${naudN++}`;
   auds.unshift({c:cod,n,t:document.getElementById('aud-t').value,p,a:document.getElementById('aud-a').value,fi:document.getElementById('aud-fi').value||td(),ff:document.getElementById('aud-ff').value||'Por definir',r,hall:0,e:'Programada'});
+  saveAll();
   rAud();cm('maud');['aud-n','aud-r','aud-fi','aud-ff'].forEach(id=>document.getElementById(id).value='');
   ntf(`Auditoría ${cod} registrada`);
 }
@@ -878,6 +941,138 @@ function verAud(i){const a=auds[i];ntf(`Auditoría ${a.c}: ${a.hall} hallazgos �
 
 // init new modules
 rMapa();rCap();rAud();
+
+
+// ===== PERSISTENCIA DE DATOS =====
+function saveAll() {
+  try {
+    localStorage.setItem('tl_casos', JSON.stringify(casos));
+    localStorage.setItem('tl_cons', JSON.stringify(cons));
+    localStorage.setItem('tl_ctrs', JSON.stringify(ctrs));
+    localStorage.setItem('tl_risks', JSON.stringify(risks));
+    localStorage.setItem('tl_caps', JSON.stringify(caps));
+    localStorage.setItem('tl_auds', JSON.stringify(auds));
+    localStorage.setItem('tl_evids', JSON.stringify(evids));
+  } catch(e) { console.warn('Storage error:', e); }
+}
+
+function loadAll() {
+  try {
+    const c = localStorage.getItem('tl_casos'); if(c) casos = JSON.parse(c);
+    const q = localStorage.getItem('tl_cons'); if(q) cons = JSON.parse(q);
+    const ct = localStorage.getItem('tl_ctrs'); if(ct) ctrs = JSON.parse(ct);
+    const r = localStorage.getItem('tl_risks'); if(r) risks = JSON.parse(r);
+    const cp = localStorage.getItem('tl_caps'); if(cp) caps = JSON.parse(cp);
+    const a = localStorage.getItem('tl_auds'); if(a) auds = JSON.parse(a);
+    const ev = localStorage.getItem('tl_evids'); if(ev) evids = JSON.parse(ev);
+  } catch(e) { console.warn('Load error:', e); }
+}
+
+// ===== API KEY =====
+let CLAUDE_API_KEY = localStorage.getItem('tl_apikey') || '';
+function saveApiKey() {
+  CLAUDE_API_KEY = document.getElementById('api-key-input').value.trim();
+  localStorage.setItem('tl_apikey', CLAUDE_API_KEY);
+  document.getElementById('api-btn').textContent = CLAUDE_API_KEY ? '🤖 API IA ✓' : '🤖 API IA';
+  cm('mapikey');
+  ntf('API Key guardada correctamente');
+}
+
+// ===== ANÁLISIS IA DE CONTRATOS =====
+const LEGISLATION = {
+  PE: 'Código Civil Peruano (D.L.295), Ley de Tercerización Ley 29245 + D.S.006-2008-TR, Ley 27626 Intermediación Laboral, SUNAT IGV y retenciones, Ley 29733 Protección de Datos, INDECOPI D.L.1034 Conductas Anticompetitivas, normativa SUNAFIL.',
+  CL: 'Ley 20.393 Responsabilidad Penal Personas Jurídicas (lavado de activos, cohecho, financiamiento terrorismo), Código del Trabajo chileno, Ley 20.123 Subcontratación, normativa SII tributaria, Ley 19.628 Protección de Datos.',
+  CO: 'Código Sustantivo del Trabajo colombiano, Ley 1258/08 SAS, Decreto 1072/15 Sector Trabajo, Ley 1581/12 Protección de Datos Habeas Data, normativa DIAN tributaria, Ley 1474/11 Estatuto Anticorrupción.'
+};
+
+async function analizarContrato(texto, paisCode) {
+  if (!CLAUDE_API_KEY) {
+    om('mapikey');
+    ntf('Configura tu API Key de Claude primero', 'err');
+    return null;
+  }
+  const ley = LEGISLATION[paisCode] || LEGISLATION.PE;
+  const pNombre = paisCode === 'PE' ? 'PERÚ' : paisCode === 'CL' ? 'CHILE' : 'COLOMBIA';
+  const prompt = `Eres un abogado especialista en compliance para empresas BTL y outsourcing en ${pNombre}. Marco legal aplicable: ${ley}
+
+Analiza el siguiente contrato y responde en HTML estructurado con estas secciones exactas usando h3 para títulos, ul/li para listas, strong para destacar, span style='color:red' para riesgo CRÍTICO, span style='color:orange' para riesgo ALTO:
+
+<h3>🔴 1. Cláusulas de Riesgo Crítico</h3>
+<h3>🟡 2. Riesgos Financieros</h3>
+<h3>🟠 3. Riesgos Operativos</h3>
+<h3>⚖️ 4. Riesgos Legales ${pNombre}</h3>
+<h3>✏️ 5. Texto Sugerido para Negociar (por cláusula)</h3>
+<h3>📋 6. Resumen Ejecutivo</h3>
+
+Para cada riesgo incluye: descripción, base legal específica, texto actual problemático y texto sugerido de reemplazo. En el resumen indica nivel global CRÍTICO/ALTO/MEDIO/BAJO, top 3 puntos clave y recomendación FIRMAR/NEGOCIAR/RECHAZAR.
+
+Contrato: ${texto || '(Sin texto — muestra análisis de riesgos típicos en contratos BTL/outsourcing para ' + pNombre + ')'}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.content?.[0]?.text || 'Error al analizar.';
+  } catch(e) {
+    ntf('Error IA: ' + e.message, 'err');
+    return null;
+  }
+}
+
+// Modal análisis IA
+let currentCtrIdx = -1;
+async function verAnalisisIA(i) {
+  currentCtrIdx = i;
+  const c = ctrs[i];
+  const modal = document.getElementById('modal-analisis-ia');
+  if (!modal) return;
+  document.getElementById('ia-titulo').textContent = `Análisis IA · ${c.c} · ${c.cl}`;
+  document.getElementById('ia-pais').textContent = {PE:'🇵🇪 Perú', CL:'🇨🇱 Chile', CO:'🇨🇴 Colombia'}[c.p] || c.p;
+  document.getElementById('ia-tipo').textContent = c.t;
+  document.getElementById('ia-solicitante').textContent = c.solicitante || '-';
+  const resultDiv = document.getElementById('ia-result');
+  
+  if (c.aiResult) {
+    resultDiv.innerHTML = c.aiResult;
+  } else {
+    resultDiv.innerHTML = '<div style="text-align:center;padding:32px"><div style="font-size:24px;margin-bottom:8px">🤖</div><div style="color:var(--muted)">Haz clic en "Analizar con IA" para generar el informe</div></div>';
+  }
+  modal.classList.add('open');
+}
+
+async function ejecutarAnalisis() {
+  if (currentCtrIdx < 0) return;
+  const c = ctrs[currentCtrIdx];
+  const btn = document.getElementById('btn-analizar');
+  const resultDiv = document.getElementById('ia-result');
+  btn.disabled = true;
+  btn.textContent = '⏳ Analizando...';
+  resultDiv.innerHTML = '<div style="text-align:center;padding:32px"><div style="width:32px;height:32px;border:2px solid rgba(255,255,255,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div><div style="color:var(--muted)">Claude está analizando con legislación ' + (c.p === 'PE' ? 'peruana' : c.p === 'CL' ? 'chilena (Ley 20.393)' : 'colombiana') + '...</div></div>';
+  
+  // Get contract text from input if available
+  const textoInput = document.getElementById('ia-texto');
+  const texto = textoInput ? textoInput.value : (c.texto || '');
+  
+  const result = await analizarContrato(texto, c.p);
+  if (result) {
+    resultDiv.innerHTML = result;
+    ctrs[currentCtrIdx].aiResult = result;
+    ctrs[currentCtrIdx].an = 'Completado';
+    rCtrs();
+    saveAll();
+    ntf('Análisis completado y guardado');
+  }
+  btn.disabled = false;
+  btn.textContent = '🤖 Analizar con IA';
+}
 
 document.querySelectorAll('.mo').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')})});
 </script>
