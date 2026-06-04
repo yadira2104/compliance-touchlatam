@@ -610,7 +610,7 @@ function rCons(){
   document.getElementById('sla-al').innerHTML=v?`<div class="al d"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg><strong>${v} consulta(s) con SLA vencido</strong> — Respuesta inmediata requerida</div>`:'';
 }
 function rCtrs(){
-  document.getElementById('ctrtb').innerHTML=ctrs.map((c,i)=>`<tr><td class="mono">${c.c}</td><td style="font-weight:500">${c.cl}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.t}</td><td>${rb(c.r)}</span></td><td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)';max-width:160px}">${c.cls}</td><td>${eb(c.e)}</td><td>${eb(c.an)}</td><td><button class='btn btn-g btn-sm' onclick='verAnalisisIA(${i})' style='white-space:nowrap'>${c.aiResult ? '📋 Ver análisis' : '🤖 Analizar IA'}</button></td></tr>`).join('');
+  document.getElementById('ctrtb').innerHTML=ctrs.map((c,i)=>`<tr><td class="mono">${c.c}</td><td style="font-weight:500">${c.cl}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.t}</td><td>${rb(c.r)}</span></td><td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)'}">${c.cls}</td><td>${eb(c.e)}</td><td>${eb(c.an)}</td><td><button class='btn btn-g btn-sm' onclick='verAnalisisIA(${i})' style='white-space:nowrap'>${c.aiResult ? '📋 Ver análisis' : '🤖 Analizar IA'}</button></td></tr>`).join('');
 }
 function rRisks(){
   document.getElementById('rtb').innerHTML=risks.map(r=>`<tr><td style="font-weight:500;max-width:180px;font-size:13px">${r.n}</td><td style="font-size:12px">${r.p}</td><td>${eb(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado').replace(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado',r.pr)}</td><td>${eb(r.im.includes('Alto')?'SLA Vencido':'En evaluación').replace(r.im.includes('Alto')?'SLA Vencido':'En evaluación',r.im)}</td><td>${rb(r.nv)}</span></td><td style="font-size:12px;color:var(--muted)">${r.ct}</td><td style="font-size:12px">${r.rs}</td></tr>`).join('');
@@ -988,26 +988,13 @@ const LEGISLATION = {
 async function analizarContrato(texto, paisCode) {
   if (!CLAUDE_API_KEY) {
     om('mapikey');
-    ntf('Configura tu API Key de Claude primero', 'err');
+    ntf('Configura tu API Key de Claude primero');
     return null;
   }
   const ley = LEGISLATION[paisCode] || LEGISLATION.PE;
-  const pNombre = paisCode === 'PE' ? 'PERÚ' : paisCode === 'CL' ? 'CHILE' : 'COLOMBIA';
-  const prompt = `Eres un abogado especialista en compliance para empresas BTL y outsourcing en ${pNombre}. Marco legal aplicable: ${ley}
-
-Analiza el siguiente contrato y responde en HTML estructurado con estas secciones exactas usando h3 para títulos, ul/li para listas, strong para destacar, span style='color:red' para riesgo CRÍTICO, span style='color:orange' para riesgo ALTO:
-
-<h3>🔴 1. Cláusulas de Riesgo Crítico</h3>
-<h3>🟡 2. Riesgos Financieros</h3>
-<h3>🟠 3. Riesgos Operativos</h3>
-<h3>⚖️ 4. Riesgos Legales ${pNombre}</h3>
-<h3>✏️ 5. Texto Sugerido para Negociar (por cláusula)</h3>
-<h3>📋 6. Resumen Ejecutivo</h3>
-
-Para cada riesgo incluye: descripción, base legal específica, texto actual problemático y texto sugerido de reemplazo. En el resumen indica nivel global CRÍTICO/ALTO/MEDIO/BAJO, top 3 puntos clave y recomendación FIRMAR/NEGOCIAR/RECHAZAR.
-
-Contrato: ${texto || '(Sin texto — muestra análisis de riesgos típicos en contratos BTL/outsourcing para ' + pNombre + ')'}`;
-
+  const pNombre = paisCode === 'PE' ? 'PERU' : paisCode === 'CL' ? 'CHILE' : 'COLOMBIA';
+  const sinTexto = '(Sin texto de contrato proporcionado. Muestra un analisis de riesgos tipicos para contratos BTL/outsourcing en ' + pNombre + ')';
+  const prompt = 'Eres un abogado especialista en compliance para empresas BTL y outsourcing en ' + pNombre + '. Marco legal aplicable: ' + ley + '. Analiza el siguiente contrato y responde SOLO en HTML. Usa h3 para titulos de seccion, ul y li para listas, strong para destacar texto importante. Para cada riesgo incluye: descripcion del riesgo, ley aplicable, texto actual problematico y texto sugerido para negociar. Estructura tu respuesta con estas 6 secciones: 1-Clausulas de Riesgo Critico, 2-Riesgos Financieros, 3-Riesgos Operativos, 4-Riesgos Legales ' + pNombre + ', 5-Texto Sugerido por Clausula para Negociar, 6-Resumen Ejecutivo con recomendacion FIRMAR o NEGOCIAR o RECHAZAR. Contrato: ' + (texto || sinTexto);
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1020,9 +1007,9 @@ Contrato: ${texto || '(Sin texto — muestra análisis de riesgos típicos en co
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
-    return data.content?.[0]?.text || 'Error al analizar.';
+    return data.content && data.content[0] ? data.content[0].text : 'Error al analizar.';
   } catch(e) {
-    ntf('Error IA: ' + e.message, 'err');
+    ntf('Error IA: ' + e.message);
     return null;
   }
 }
