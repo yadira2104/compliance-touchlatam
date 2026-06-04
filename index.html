@@ -101,8 +101,37 @@ select.fi option{background:var(--bg3)}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
+
+<style id="login-styles">
+.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px 36px;width:380px;max-width:95vw}
+.login-logo{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.login-logo span{color:var(--accent)}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.login-err{background:rgba(232,85,85,0.12);border:1px solid rgba(232,85,85,0.25);color:#f09090;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none}
+.login-err.show{display:block}
+.login-footer{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
+</style>
 </head>
 <body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:13px">· 360°</span></div>
+    <div class="login-sub">Sistema de Gestión de Compliance · Acceso restringido</div>
+    <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
+    <div class="fg">
+      <label class="fl">Usuario</label>
+      <input class="fi" type="text" id="li-user" placeholder="tu usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="fg">
+      <label class="fl">Contraseña</label>
+      <input class="fi" type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;padding:11px;margin-top:4px" onclick="doLogin()">Ingresar al sistema</button>
+    <div class="login-footer">Touch Latam · Perú · Chile · Colombia<br>Solo personal autorizado</div>
+  </div>
+</div>
 <div class="app">
 <header class="topbar">
   <div class="logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:12px">· 360°</span></div>
@@ -114,7 +143,8 @@ select.fi option{background:var(--bg3)}
   </div>
   <div style="font-size:12px;color:var(--muted);font-family:var(--mono)" id="clk"></div>
   <button onclick="om('mapikey')" style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.25);color:var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)" id="api-btn">🤖 API IA</button>
-<div class="avatar">CO</div>
+<div class="avatar" id="av-init">CO</div>
+<button onclick="logout()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;margin-left:4px;font-family:var(--font)" title="Cerrar sesión">⏻</button>
 </header>
 
 <aside class="sidebar">
@@ -528,6 +558,69 @@ select.fi option{background:var(--bg3)}
 </div>
 
 <script>
+
+// ===== USUARIOS Y ROLES =====
+const USERS = {
+  'compliance': { pass: 'Touch2026!', role: 'admin', name: 'Compliance Officer', pais: 'Todos' },
+  'ceo':        { pass: 'Ceo2026#',   role: 'viewer', name: 'CEO',               pais: 'Todos' },
+  'cfo':        { pass: 'Cfo2026#',   role: 'viewer', name: 'CFO / Finanzas',    pais: 'Todos' },
+};
+let CURRENT_USER = null;
+
+function doLogin() {
+  const u = document.getElementById('li-user').value.trim().toLowerCase();
+  const p = document.getElementById('li-pass').value;
+  const err = document.getElementById('login-err');
+  if (USERS[u] && USERS[u].pass === p) {
+    CURRENT_USER = { ...USERS[u], username: u };
+    sessionStorage.setItem('tl_session', JSON.stringify(CURRENT_USER));
+    document.getElementById('login-overlay').style.display = 'none';
+    applyRole();
+    err.classList.remove('show');
+  } else {
+    err.classList.add('show');
+    document.getElementById('li-pass').value = '';
+  }
+}
+
+function applyRole() {
+  if (!CURRENT_USER) return;
+  // Update avatar and name
+  document.querySelector('.avatar').textContent = CURRENT_USER.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  // Viewer: hide all action buttons
+  if (CURRENT_USER.role === 'viewer') {
+    const btns = document.querySelectorAll('.btn-p, .btn.btn-p');
+    btns.forEach(b => {
+      if (b.textContent.includes('+') || b.textContent.includes('Nuevo') || b.textContent.includes('Subir') || b.textContent.includes('Registrar')) {
+        b.style.display = 'none';
+      }
+    });
+    // Hide API key button
+    const apiBtn = document.getElementById('api-btn');
+    if (apiBtn) apiBtn.style.display = 'none';
+  }
+}
+
+function checkSession() {
+  const s = sessionStorage.getItem('tl_session');
+  if (s) {
+    try {
+      CURRENT_USER = JSON.parse(s);
+      document.getElementById('login-overlay').style.display = 'none';
+      applyRole();
+      return true;
+    } catch(e) {}
+  }
+  return false;
+}
+
+function logout() {
+  sessionStorage.removeItem('tl_session');
+  CURRENT_USER = null;
+  location.reload();
+}
+
+
 // ===== API KEY — DECLARACIÓN TEMPRANA (ANTES DE CUALQUIER USO) =====
 // ⚠️ CRÍTICO: debe ir al inicio del script, antes de loadAll() y del bloque INIT
 let CLAUDE_API_KEY = localStorage.getItem('tl_apikey') || '';
@@ -764,6 +857,7 @@ document.getElementById('nf').textContent=td();
 loadAll();
 rDash();rCasos();rCons();rCtrs();rRisks();rEvids();rHeat();rLey();
 // Actualizar UI con API key (ya declarada al inicio del script)
+checkSession();
 if(CLAUDE_API_KEY) document.getElementById('api-btn').textContent='🤖 API IA ✓';
 document.getElementById('api-key-input').value=CLAUDE_API_KEY;
 
