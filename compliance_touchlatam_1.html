@@ -101,8 +101,65 @@ select.fi option{background:var(--bg3)}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
+
+<style id="login-styles">
+.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px 36px;width:380px;max-width:95vw}
+.login-logo{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.login-logo span{color:var(--accent)}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.login-err{background:rgba(232,85,85,0.12);border:1px solid rgba(232,85,85,0.25);color:#f09090;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none}
+.login-err.show{display:block}
+.login-footer{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
+</style>
+
+<style id="print-styles">
+@media print {
+  .login-overlay,.topbar,.sidebar,.btn,.mo,#ntf,.nb,.cpill,
+  button:not(.print-keep){display:none!important}
+  .app{display:block!important;grid-template-columns:1fr!important}
+  .main{overflow:visible!important;padding:16px!important}
+  .view{display:none!important}
+  .view.print-active{display:block!important}
+  body{background:#fff!important;color:#000!important;font-size:12px!important}
+  .card{border:1px solid #ddd!important;background:#fff!important;break-inside:avoid}
+  .metrics{grid-template-columns:repeat(4,1fr)!important}
+  .mc{background:#f8f9fa!important;border:1px solid #ddd!important}
+  .mv{color:#000!important}
+  .ml,.ms,.ps,.muted{color:#666!important}
+  table.t th{background:#f0f0f0!important;color:#333!important}
+  table.t td{color:#000!important;border-color:#ddd!important}
+  .badge{border:1px solid #ccc!important;color:#333!important;background:#f5f5f5!important}
+  .pf{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .report-header{display:block!important}
+  .report-footer{display:block!important}
+  h1,h2,h3{color:#000!important}
+  .al{border:1px solid #ddd!important;background:#f9f9f9!important;color:#333!important}
+  a{color:#000!important;text-decoration:none!important}
+}
+.report-header{display:none;padding:20px 0 16px;border-bottom:3px solid #4f8ef7;margin-bottom:20px}
+.report-footer{display:none;padding:12px 0;border-top:1px solid #ddd;margin-top:20px;font-size:11px;color:#666;text-align:center}
+</style>
 </head>
 <body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:13px">· 360°</span></div>
+    <div class="login-sub">Sistema de Gestión de Compliance · Acceso restringido</div>
+    <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
+    <div class="fg">
+      <label class="fl">Usuario</label>
+      <input class="fi" type="text" id="li-user" placeholder="tu usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="fg">
+      <label class="fl">Contraseña</label>
+      <input class="fi" type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;padding:11px;margin-top:4px" onclick="doLogin()">Ingresar al sistema</button>
+    <div class="login-footer">Touch Latam · Perú · Chile · Colombia<br>Solo personal autorizado</div>
+  </div>
+</div>
 <div class="app">
 <header class="topbar">
   <div class="logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:12px">· 360°</span></div>
@@ -113,8 +170,10 @@ select.fi option{background:var(--bg3)}
     <div class="cpill" onclick="fc(this,'CO')">🇨🇴 Colombia</div>
   </div>
   <div style="font-size:12px;color:var(--muted);font-family:var(--mono)" id="clk"></div>
-  <button onclick="om('mapikey')" style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.25);color:var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)" id="api-btn">🤖 API IA</button>
-<div class="avatar">CO</div>
+  <button onclick="openReportModal()" style="background:rgba(45,212,160,0.12);border:1px solid rgba(45,212,160,0.25);color:var(--accent2);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">📊 Exportar PDF</button>
+<button onclick="om('mapikey')" style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.25);color:var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)" id="api-btn">🤖 API IA</button>
+<div class="avatar" id="av-init">CO</div>
+<button onclick="logout()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;margin-left:4px;font-family:var(--font)" title="Cerrar sesión">⏻</button>
 </header>
 
 <aside class="sidebar">
@@ -240,7 +299,18 @@ select.fi option{background:var(--bg3)}
     <button class="btn btn-p btn-sm" onclick="om('mctr')">+ Subir contrato</button>
   </div>
   <div class="card" style="padding:0;margin-bottom:14px"><table class="t"><thead><tr><th>Código</th><th>Cliente</th><th>País</th><th>Tipo</th><th>Nivel de riesgo</th><th>Cláusulas críticas</th><th>Estado</th><th>Análisis</th><th>IA</th></tr></thead><tbody id="ctrtb"></tbody></table></div>
-  <div class="card" style="background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)"><div style="display:flex;align-items:center;gap:10px;font-size:13px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg><span style="color:var(--accent);font-weight:500">Análisis automático con IA:</span><span style="color:var(--muted)">Al subir el contrato, el sistema detecta cláusulas de penalidad, responsabilidad, exclusividad y terminación. El informe llega por email al solicitante en &lt; 5 minutos.</span></div></div>
+  <div class="card" style="background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2);margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:10px">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v.5"/></svg>
+      <span style="color:var(--accent);font-weight:500">Cómo subir contratos reales:</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted)">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);font-weight:700;flex-shrink:0">1.</span><span>Sube el PDF del contrato a <strong style="color:var(--text)">Google Drive</strong> en la carpeta "Contratos Touch 2026"</span></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);font-weight:700;flex-shrink:0">2.</span><span>Clic derecho sobre el archivo → <strong style="color:var(--text)">"Obtener enlace"</strong> → "Cualquier persona con el enlace puede ver"</span></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);font-weight:700;flex-shrink:0">3.</span><span>Haz clic en <strong style="color:var(--text)">"+ Subir contrato"</strong> → pega el enlace en el campo Google Drive → Claude analiza el riesgo</span></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent2);font-weight:700;flex-shrink:0">✓</span><span>El ícono 📂 aparece en la tabla para acceder al contrato original directamente</span></div>
+    </div>
+  </div>
 </div>
 
 <!-- RIESGOS -->
@@ -328,11 +398,14 @@ select.fi option{background:var(--bg3)}
     <div class="fr"><div class="fg"><label class="fl">País *</label><select class="fi" id="rp"><option value="PE">🇵🇪 Perú</option><option value="CL">🇨🇱 Chile</option><option value="CO">🇨🇴 Colombia</option></select></div><div class="fg"><label class="fl">Tipo *</label><select class="fi" id="rt"><option>Servicio BTL</option><option>Outsourcing</option><option>Mesa de compras</option><option>Marco comercial</option><option>Otro</option></select></div></div>
     <div class="fg"><label class="fl">Cliente *</label><input class="fi" id="rc" placeholder="Empresa cliente"></div>
     <div class="fg"><label class="fl">Nombre del archivo *</label><input class="fi" id="rf" placeholder="ej: contrato_falabella_co_2026.pdf"></div>
+    <div class="fg"><label class="fl">Enlace Google Drive (PDF del contrato)</label>
+    <input class="fi" id="rgd" placeholder="https://drive.google.com/file/d/...">
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">📂 Sube el PDF a Google Drive → clic derecho → "Obtener enlace" → pega aquí</div></div>
     <div class="fg"><label class="fl">Notas para el análisis</label><textarea class="fi" id="rn" placeholder="¿Hay alguna cláusula que te preocupa específicamente?"></textarea></div>
-    <div style="background:rgba(45,212,160,0.08);border:1px solid rgba(45,212,160,0.2);border-radius:8px;padding:10px;font-size:12px;color:#6ee7b7;margin-bottom:14px">🤖 El sistema analiza: penalidades, responsabilidad, exclusividad, terminación anticipada y condiciones de pago. Informe por email en &lt; 5 min.</div>
+    <div style="background:rgba(45,212,160,0.08);border:1px solid rgba(45,212,160,0.2);border-radius:8px;padding:10px;font-size:12px;color:#6ee7b7;margin-bottom:14px">🤖 El sistema analiza: penalidades, responsabilidad, exclusividad, terminación anticipada y condiciones de pago. Si pegas el enlace de Drive, Claude lee el contrato real.</div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="btn btn-g" onclick="cm('mctr')">Cancelar</button>
-      <button class="btn btn-p" onclick="gCtr()">Subir y analizar</button>
+      <button class="btn btn-p" onclick="gCtr()">Registrar y analizar</button>
     </div>
   </div>
 </div>
@@ -528,19 +601,82 @@ select.fi option{background:var(--bg3)}
 </div>
 
 <script>
+
+// ===== USUARIOS Y ROLES =====
+const USERS = {
+  'compliance': { pass: 'Touch2026!', role: 'admin', name: 'Compliance Officer', pais: 'Todos' },
+  'ceo':        { pass: 'Ceo2026#',   role: 'viewer', name: 'CEO',               pais: 'Todos' },
+  'cfo':        { pass: 'Cfo2026#',   role: 'viewer', name: 'CFO / Finanzas',    pais: 'Todos' },
+};
+let CURRENT_USER = null;
+
+function doLogin() {
+  const u = document.getElementById('li-user').value.trim().toLowerCase();
+  const p = document.getElementById('li-pass').value;
+  const err = document.getElementById('login-err');
+  if (USERS[u] && USERS[u].pass === p) {
+    CURRENT_USER = { ...USERS[u], username: u };
+    sessionStorage.setItem('tl_session', JSON.stringify(CURRENT_USER));
+    document.getElementById('login-overlay').style.display = 'none';
+    applyRole();
+    err.classList.remove('show');
+  } else {
+    err.classList.add('show');
+    document.getElementById('li-pass').value = '';
+  }
+}
+
+function applyRole() {
+  if (!CURRENT_USER) return;
+  // Update avatar and name
+  document.querySelector('.avatar').textContent = CURRENT_USER.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  // Viewer: hide all action buttons
+  if (CURRENT_USER.role === 'viewer') {
+    const btns = document.querySelectorAll('.btn-p, .btn.btn-p');
+    btns.forEach(b => {
+      if (b.textContent.includes('+') || b.textContent.includes('Nuevo') || b.textContent.includes('Subir') || b.textContent.includes('Registrar')) {
+        b.style.display = 'none';
+      }
+    });
+    // Hide API key button
+    const apiBtn = document.getElementById('api-btn');
+    if (apiBtn) apiBtn.style.display = 'none';
+  }
+}
+
+function checkSession() {
+  const s = sessionStorage.getItem('tl_session');
+  if (s) {
+    try {
+      CURRENT_USER = JSON.parse(s);
+      document.getElementById('login-overlay').style.display = 'none';
+      applyRole();
+      return true;
+    } catch(e) {}
+  }
+  return false;
+}
+
+function logout() {
+  sessionStorage.removeItem('tl_session');
+  CURRENT_USER = null;
+  location.reload();
+}
+
+
 // ===== API KEY — DECLARACIÓN TEMPRANA (ANTES DE CUALQUIER USO) =====
 // ⚠️ CRÍTICO: debe ir al inicio del script, antes de loadAll() y del bloque INIT
 let CLAUDE_API_KEY = localStorage.getItem('tl_apikey') || '';
 
 // ===== DATA =====
 let casos=[
-  {c:'CMP-PE-2026-014',f:'12/05/2026',p:'PE',t:'Fraude',a:'Finanzas',e:'En investigación',r:'Officer PE',ev:'3 archivos',d:'Posible manipulación de notas de crédito sin autorización doble.'},
-  {c:'CMP-CL-2026-008',f:'08/05/2026',p:'CL',t:'Laboral',a:'RRHH',e:'En evaluación',r:'Officer CL',ev:'1 archivo',d:'Denuncia de acoso laboral en equipo de operaciones Chile.'},
-  {c:'CMP-CO-2026-003',f:'28/04/2026',p:'CO',t:'Legal',a:'Comercial',e:'Recibido',r:'Officer CO',ev:'Sin evidencia',d:'Consulta sobre validez de exclusividad en contrato Falabella Colombia.'},
-  {c:'CMP-PE-2026-013',f:'05/05/2026',p:'PE',t:'Conflicto de interés',a:'Operaciones',e:'Cerrado',r:'Officer PE',ev:'2 archivos',d:'Conflicto de interés en proceso de selección de proveedor de activación.'},
-  {c:'CMP-CL-2026-007',f:'02/05/2026',p:'CL',t:'Financiero',a:'Finanzas',e:'En investigación',r:'Officer CL',ev:'5 archivos',d:'Inconsistencia en márgenes reportados para cliente retail Ripley.'},
-  {c:'CMP-CO-2026-002',f:'15/04/2026',p:'CO',t:'Legal',a:'Comercial',e:'Cerrado',r:'Officer CO',ev:'4 archivos',d:'Revisión de cláusula de terminación anticipada en contrato marco.'},
-  {c:'CMP-PE-2026-012',f:'01/05/2026',p:'PE',t:'Laboral',a:'RRHH',e:'En evaluación',r:'Officer PE',ev:'2 archivos',d:'Irregularidad en proceso de liquidación de picker temporal.'},
+  {c:'CMP-PE-2026-014',f:'12/05/2026',p:'PE',t:'Fraude',a:'Finanzas',e:'En investigación',r:'Officer PE',ev:'3 archivos',d:'Posible manipulación de notas de crédito en Mesa de Compras sin autorización doble. Monto involucrado aproximado: S/. 48,000. Involucra a proveedor de activación recurrente.'},
+  {c:'CMP-CL-2026-008',f:'08/05/2026',p:'CL',t:'Laboral',a:'RRHH',e:'En evaluación',r:'Officer CL',ev:'1 archivo',d:'Denuncia de acoso laboral por parte de supervisor de operaciones hacia picker en activación Ripley. Se está evaluando bajo protocolo Ley 21.643 Chile.'},
+  {c:'CMP-CO-2026-003',f:'28/04/2026',p:'CO',t:'Legal',a:'Comercial',e:'Recibido',r:'Officer CO',ev:'Sin evidencia',d:'Consulta sobre validez de cláusula de exclusividad 24 meses en contrato Éxito Colombia. KAM solicitó aprobación sin revisión legal previa.'},
+  {c:'CMP-PE-2026-013',f:'05/05/2026',p:'PE',t:'Conflicto de interés',a:'Operaciones',e:'Cerrado',r:'Officer PE',ev:'2 archivos',d:'KAM Perú presentó propuesta de proveedor de activación BTL con vínculo familiar no declarado. Resuelto con declaración jurada y cambio de proveedor.'},
+  {c:'CMP-CL-2026-007',f:'02/05/2026',p:'CL',t:'Financiero',a:'Finanzas',e:'En investigación',r:'Officer CL',ev:'5 archivos',d:'Inconsistencia en márgenes reportados para cliente Ripley Chile — diferencia de CLP 2.3M entre cotización y liquidación. CFO CL solicitó auditoría interna.'},
+  {c:'CMP-CO-2026-002',f:'15/04/2026',p:'CO',t:'Legal',a:'Comercial',e:'Cerrado',r:'Officer CO',ev:'4 archivos',d:'Revisión de cláusula de terminación anticipada en contrato marco Falabella CO. Negociada penalidad máxima equivalente a 2 meses de servicio.'},
+  {c:'CMP-PE-2026-012',f:'01/05/2026',p:'PE',t:'Laboral',a:'RRHH',e:'En evaluación',r:'Officer PE',ev:'2 archivos',d:'Irregularidad en liquidación de picker temporal Titask — beneficios calculados sin incluir gratificación proporcional. Afecta a 3 trabajadores de campaña Tottus.'},
 ];
 let cons=[
   {c:'QRY-PE-2026-041',s:'María González',a:'Comercial',t:'Contractual',p:'PE',cl:'Plaza Vea',e:'Recibido',l:'04/06/2026',d:'Cláusula de exclusividad 12 meses — ¿podemos aceptar?'},
@@ -551,20 +687,53 @@ let cons=[
   {c:'QRY-CO-2026-007',s:'Pedro Mora',a:'Comercial',t:'Contractual',p:'CO',cl:'Falabella',e:'En proceso',l:'03/06/2026',d:'Límite de penalidad en contrato marco de servicios BTL Colombia.'},
 ];
 let ctrs=[
-  {c:'CTR-CO-2026-011',cl:'Falabella Colombia',p:'CO',t:'Servicio BTL',r:'Crítico',cls:'Penalidad sin límite, terminación unilateral',e:'En revisión',an:'Completado'},
-  {c:'CTR-PE-2026-007',cl:'Plaza Vea',p:'PE',t:'Outsourcing',r:'Medio',cls:'Exclusividad 18 meses',e:'Vigente',an:'Completado'},
-  {c:'CTR-CL-2026-005',cl:'Ripley Chile',p:'CL',t:'Marco comercial',r:'Bajo',cls:'Ninguna crítica',e:'Vigente',an:'Completado'},
-  {c:'CTR-PE-2026-009',cl:'Tottus',p:'PE',t:'Servicio BTL',r:'Alto',cls:'Responsabilidad extensiva, pago a 90 días',e:'En revisión',an:'Completado'},
-  {c:'CTR-CO-2026-012',cl:'Éxito Colombia',p:'CO',t:'Mesa de compras',r:'Crítico',cls:'Exclusividad + penalidad sin tope',e:'Pendiente firma',an:'En proceso'},
+  {c:'CTR-CO-2026-011',cl:'Falabella Colombia',p:'CO',t:'Servicio BTL',r:'Crítico',cls:'Penalidad sin límite, terminación unilateral 30 días',e:'En revisión',an:'Completado',solicitante:'Officer CO',texto:'',aiResult:''},
+  {c:'CTR-CO-2026-012',cl:'Éxito Colombia',p:'CO',t:'Mesa de compras',r:'Crítico',cls:'Exclusividad 24 meses + penalidad sin tope',e:'Pendiente firma',an:'En proceso',solicitante:'KAM CO',texto:'',aiResult:''},
+  {c:'CTR-PE-2026-007',cl:'Plaza Vea',p:'PE',t:'Outsourcing Titask',r:'Medio',cls:'Exclusividad 18 meses — pickers y shoppers',e:'Vigente',an:'Completado',solicitante:'Officer PE',texto:'',aiResult:''},
+  {c:'CTR-PE-2026-009',cl:'Tottus',p:'PE',t:'Servicio BTL — Go',r:'Alto',cls:'Responsabilidad extensiva, pago a 90 días',e:'En revisión',an:'Completado',solicitante:'KAM PE',texto:'',aiResult:''},
+  {c:'CTR-PE-2026-010',cl:'Nestlé Perú',p:'PE',t:'Mesa de compras',r:'Alto',cls:'Sin cláusula PI — riesgo Quad Graphics',e:'En revisión',an:'Completado',solicitante:'Officer PE',texto:'',aiResult:''},
+  {c:'CTR-CL-2026-005',cl:'Ripley Chile',p:'CL',t:'Marco comercial BTL',r:'Bajo',cls:'Sin cláusulas críticas detectadas',e:'Vigente',an:'Completado',solicitante:'Officer CL',texto:'',aiResult:''},
+  {c:'CTR-CL-2026-006',cl:'Unimarc',p:'CL',t:'Outsourcing Titask',r:'Medio',cls:'Terminación anticipada 15 días hábiles',e:'Vigente',an:'Completado',solicitante:'KAM CL',texto:'',aiResult:''},
+  {c:'CTR-CL-2026-007',cl:'Walmart Chile',p:'CL',t:'Servicio BTL — Go',r:'Alto',cls:'Penalidad por incumplimiento SLA operativo',e:'En revisión',an:'En proceso',solicitante:'Officer CL',texto:'',aiResult:''},
+  {c:'CTR-CL-2026-008',cl:'Cencosud',p:'CL',t:'Jobs — colocación',r:'Medio',cls:'Exclusividad de candidatos 6 meses',e:'Vigente',an:'Completado',solicitante:'KAM CL',texto:'',aiResult:''},
+  {c:'CTR-PE-2026-011',cl:'Makro Perú',p:'PE',t:'Servicio BTL — Go',r:'Bajo',cls:'Sin cláusulas críticas',e:'Vigente',an:'Completado',solicitante:'KAM PE',texto:'',aiResult:''},
 ];
 let risks=[
-  {n:'Notas de crédito no auditadas',p:'PE',a:'Finanzas',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Aprobación doble + log inmutable',rs:'CFO PE'},
-  {n:'Contrato sin revisión legal',p:'CO',a:'Comercial',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Módulo C obligatorio antes de firma',rs:'Officer CO'},
-  {n:'Incumplimiento Ley 20.393',p:'CL',a:'Legal',pr:'Media',im:'Muy alto',nv:'Crítico',ct:'Capacitación anual + checklist',rs:'Officer CL'},
-  {n:'Márgenes incorrectos en cotizaciones',p:'PE/CO',a:'Finanzas',pr:'Media',im:'Alto',nv:'Alto',ct:'Validación automática margen mínimo',rs:'CFO'},
-  {n:'Fuga de información por WhatsApp',p:'Todos',a:'Todos',pr:'Alta',im:'Alto',nv:'Alto',ct:'Política formal + canal compliance',rs:'Officer Global'},
-  {n:'Conflicto de interés en outsourcing',p:'CL',a:'RRHH',pr:'Baja',im:'Alto',nv:'Medio',ct:'Declaración jurada anual',rs:'RRHH CL'},
-  {n:'Picker/driver sin contrato vigente',p:'Todos',a:'RRHH',pr:'Media',im:'Medio',nv:'Bajo',ct:'Alerta automática vencimiento',rs:'Ops'},
+  // ===== PERÚ =====
+  {n:'Tercerización irregular de pickers/drivers sin cumplir Ley 29245',p:'PE',a:'Operaciones',pr:'Alta',im:'Muy alto',nv:'Crítico',ct:'Contrato de tercerización visado por abogado + registro SUNAFIL',rs:'Officer PE'},
+  {n:'Intermediación laboral fuera del límite del 20% (Ley 27626)',p:'PE',a:'RRHH',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Control mensual de ratio intermediados vs planilla directa',rs:'CFO PE'},
+  {n:'Notas de crédito emitidas sin doble aprobación en Mesa de Compras',p:'PE',a:'Finanzas',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Flujo de aprobación doble + log inmutable en sistema',rs:'CFO PE'},
+  {n:'Contratos BTL con Nestlé/Plaza Vea sin cláusula de propiedad intelectual',p:'PE',a:'Comercial',pr:'Media',im:'Alto',nv:'Alto',ct:'Revisión legal obligatoria antes de firma — módulo contratos',rs:'Officer PE'},
+  {n:'Conflicto de interés en selección de proveedores activación Go',p:'PE',a:'Comercial',pr:'Media',im:'Alto',nv:'Alto',ct:'Declaración jurada anual + comité de aprobación',rs:'Officer PE'},
+  {n:'Picker/driver operando sin contrato vigente (Titask)',p:'PE',a:'RRHH',pr:'Alta',im:'Medio',nv:'Alto',ct:'Alerta automática vencimiento + bloqueo operativo en TMS',rs:'Ops PE'},
+  {n:'Fee de Mesa de Compras no documentado contractualmente',p:'PE',a:'Finanzas',pr:'Media',im:'Alto',nv:'Alto',ct:'Contrato de intermediación con fee explícito antes de operación',rs:'Officer PE'},
+  {n:'Liquidaciones incorrectas de personal temporal BTL',p:'PE',a:'RRHH',pr:'Media',im:'Medio',nv:'Medio',ct:'Checklist de liquidación + revisión RRHH antes de pago',rs:'RRHH PE'},
+  {n:'Fuga de información comercial por canales no oficiales (WhatsApp)',p:'PE',a:'Todos',pr:'Alta',im:'Medio',nv:'Medio',ct:'Política formal de comunicación + canal compliance activo',rs:'Officer PE'},
+  {n:'Cotizaciones con margen por debajo del mínimo aprobado',p:'PE',a:'Comercial',pr:'Media',im:'Medio',nv:'Medio',ct:'Validación automática margen mínimo antes de envío',rs:'CFO PE'},
+
+  // ===== CHILE =====
+  {n:'Incumplimiento Ley 20.393 — modelo de prevención no auditado',p:'CL',a:'Legal',pr:'Alta',im:'Muy alto',nv:'Crítico',ct:'Auditoría anual del modelo + encargado de prevención activo',rs:'Officer CL'},
+  {n:'Subcontratación de pickers sin cumplir Ley 20.123',p:'CL',a:'Operaciones',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Contrato de subcontratación con cláusula de responsabilidad solidaria',rs:'Officer CL'},
+  {n:'Contratos con Unimarc/Walmart/Cencosud sin revisión legal previa',p:'CL',a:'Comercial',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Revisión obligatoria en módulo contratos antes de firma',rs:'Officer CL'},
+  {n:'Cohecho o pago irregular a funcionario de cliente retail',p:'CL',a:'Comercial',pr:'Baja',im:'Muy alto',nv:'Alto',ct:'Política antisoborno + canal denuncias + capacitación anual',rs:'Officer CL'},
+  {n:'Lavado de activos en operaciones Mesa de Compras CL',p:'CL',a:'Finanzas',pr:'Baja',im:'Muy alto',nv:'Alto',ct:'KYC de proveedores + aprobación CFO para pagos sobre umbral',rs:'CFO CL'},
+  {n:'Driver sin seguro de accidente laboral activo (Titask CL)',p:'CL',a:'Operaciones',pr:'Media',im:'Alto',nv:'Alto',ct:'Verificación seguro antes de asignación de ruta',rs:'Ops CL'},
+  {n:'Incumplimiento SII — facturación electrónica incorrecta en servicios BTL',p:'CL',a:'Finanzas',pr:'Media',im:'Alto',nv:'Alto',ct:'Revisión contable mensual + alerta vencimiento folios',rs:'CFO CL'},
+  {n:'Cláusula de terminación unilateral sin límite en contratos retail CL',p:'CL',a:'Comercial',pr:'Media',im:'Alto',nv:'Alto',ct:'Negociación obligatoria de tope de penalidad antes de firma',rs:'Officer CL'},
+  {n:'Personal Jobs sin contrato indefinido cuando supera 1 año continuo',p:'CL',a:'RRHH',pr:'Media',im:'Medio',nv:'Medio',ct:'Alerta automática a 10 meses de contrato + revisión RRHH',rs:'RRHH CL'},
+  {n:'Fuga de información de clientes Cencosud por canales no seguros',p:'CL',a:'Todos',pr:'Media',im:'Medio',nv:'Medio',ct:'Política de confidencialidad firmada + canal oficial',rs:'Officer CL'},
+
+  // ===== COLOMBIA =====
+  {n:'Contratos con Falabella/Éxito con penalidad sin tope — Estatuto Anticorrupción',p:'CO',a:'Comercial',pr:'Alta',im:'Muy alto',nv:'Crítico',ct:'Negociación obligatoria tope penalidad + revisión Officer CO',rs:'Officer CO'},
+  {n:'Incumplimiento Ley 1581/12 — datos personales de pickers sin consentimiento',p:'CO',a:'RRHH',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Política de habeas data + formato de consentimiento en onboarding',rs:'Officer CO'},
+  {n:'Tercerización laboral sin contrato sindical — riesgo CST art. 462',p:'CO',a:'Operaciones',pr:'Alta',im:'Alto',nv:'Crítico',ct:'Contrato SAS por actividad + asesor laboral CO',rs:'Officer CO'},
+  {n:'Fee Mesa de Compras sin soporte DIAN — riesgo evasión tributaria',p:'CO',a:'Finanzas',pr:'Media',im:'Alto',nv:'Alto',ct:'Factura electrónica DIAN por cada intermediación + soporte',rs:'CFO CO'},
+  {n:'Conflicto de interés KAM Colombia con proveedor de activación',p:'CO',a:'Comercial',pr:'Media',im:'Alto',nv:'Alto',ct:'Declaración jurada + comité de aprobación de proveedores',rs:'Officer CO'},
+  {n:'Pago a 90+ días a proveedores BTL — riesgo de demandas laborales',p:'CO',a:'Finanzas',pr:'Media',im:'Alto',nv:'Alto',ct:'Política de pago máximo 60 días + validación CFO',rs:'CFO CO'},
+  {n:'Shopper operando sin afiliación a seguridad social (Titask CO)',p:'CO',a:'RRHH',pr:'Alta',im:'Medio',nv:'Alto',ct:'Verificación afiliación antes de inicio de operación',rs:'RRHH CO'},
+  {n:'Cláusula de exclusividad en contratos GO sin límite temporal',p:'CO',a:'Comercial',pr:'Media',im:'Medio',nv:'Medio',ct:'Negociar máximo 12 meses con opción de renovación',rs:'Officer CO'},
+  {n:'Fuga de información de márgenes por WhatsApp Business',p:'CO',a:'Todos',pr:'Alta',im:'Medio',nv:'Medio',ct:'Canal oficial de comunicación + política de confidencialidad',rs:'Officer CO'},
+  {n:'Contrato Jobs sin cláusula de propiedad de base de datos de candidatos',p:'CO',a:'Legal',pr:'Baja',im:'Medio',nv:'Bajo',ct:'Cláusula estándar de propiedad intelectual en todos los contratos',rs:'Officer CO'},
 ];
 let evids=[
   {n:'correo_aprobacion_nc_mayo.pdf',c:'CMP-PE-2026-014',p:'PE',u:'Officer PE',f:'12/05/2026',v:'v1',t:'Correo electrónico'},
@@ -613,7 +782,20 @@ function rCons(){
   document.getElementById('sla-al').innerHTML=v?`<div class="al d"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l6 12H2L8 2z"/><path d="M8 7v3M8 12v.5"/></svg><strong>${v} consulta(s) con SLA vencido</strong> — Respuesta inmediata requerida</div>`:'';
 }
 function rCtrs(){
-  document.getElementById('ctrtb').innerHTML=ctrs.map((c,i)=>`<tr><td class="mono">${c.c}</td><td style="font-weight:500">${c.cl}</td><td>${fp(c.p)}</td><td style="font-size:12px;color:var(--muted)">${c.t}</td><td>${rb(c.r)}</span></td><td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)'}">${c.cls}</td><td>${eb(c.e)}</td><td>${eb(c.an)}</td><td><button class='btn btn-g btn-sm' onclick='verAnalisisIA(${i})' style='white-space:nowrap'>${c.aiResult ? '📋 Ver análisis' : '🤖 Analizar IA'}</button></td></tr>`).join('');
+  document.getElementById('ctrtb').innerHTML=ctrs.map((c,i)=>`<tr>
+    <td class="mono">${c.c}</td>
+    <td style="font-weight:500">${c.cl}${c.driveUrl?` <a href="${c.driveUrl}" target="_blank" title="Ver en Google Drive" style="color:var(--accent);font-size:11px;margin-left:4px">📂</a>`:''}</td>
+    <td>${fp(c.p)}</td>
+    <td style="font-size:12px;color:var(--muted)">${c.t}</td>
+    <td>${rb(c.r)}</span></td>
+    <td style="font-size:11px;color:${c.r==='Crítico'?'var(--danger)':c.r==='Alto'?'var(--warn)':'var(--muted)'};max-width:160px">${c.cls}</td>
+    <td>${eb(c.e)}</td>
+    <td>${eb(c.an)}</td>
+    <td style="white-space:nowrap;display:flex;gap:4px">
+      <button class='btn btn-g btn-sm' onclick='verAnalisisIA(${i})'>${c.aiResult ? '📋 Ver' : '🤖 IA'}</button>
+      ${c.driveUrl?`<a href="${c.driveUrl}" target="_blank" class="btn btn-g btn-sm" style="text-decoration:none">📂</a>`:''}
+    </td>
+  </tr>`).join('');
 }
 function rRisks(){
   document.getElementById('rtb').innerHTML=risks.map(r=>`<tr><td style="font-weight:500;max-width:180px;font-size:13px">${r.n}</td><td style="font-size:12px">${r.p}</td><td>${eb(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado').replace(r.pr==='Alta'?'SLA Vencido':r.pr==='Media'?'En evaluación':'Cerrado',r.pr)}</td><td>${eb(r.im.includes('Alto')?'SLA Vencido':'En evaluación').replace(r.im.includes('Alto')?'SLA Vencido':'En evaluación',r.im)}</td><td>${rb(r.nv)}</span></td><td style="font-size:12px;color:var(--muted)">${r.ct}</td><td style="font-size:12px">${r.rs}</td></tr>`).join('');
@@ -698,14 +880,16 @@ function gCons(){
 }
 function gCtr(){
   const p=document.getElementById('rp').value,t=document.getElementById('rt').value,cl=document.getElementById('rc').value,f=document.getElementById('rf').value;
-  if(!cl||!f){ntf('Cliente y archivo son obligatorios','err');return;}
+  const gd=document.getElementById('rgd')?document.getElementById('rgd').value.trim():'';
+  if(!cl){ntf('El cliente es obligatorio','err');return;}
   const cod=`CTR-${p}-2026-0${nctr++}`;
-  ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso',solicitante:'',texto:'',aiResult:''});
+  const nombre=f||'Contrato '+cl;
+  ctrs.unshift({c:cod,cl,p,t,r:'Analizando...',cls:'Análisis en proceso',e:'En revisión',an:'En proceso',solicitante:'',texto:'',aiResult:'',driveUrl:gd,archivo:nombre});
   saveAll();
   rCtrs();
   document.getElementById('m3').textContent=ctrs.filter(c=>c.e==='En revisión').length;
-  cm('mctr');['rc','rf','rn'].forEach(id=>document.getElementById(id).value='');
-  ntf(`Contrato ${cod} enviado a análisis IA · Informe por email`);
+  cm('mctr');['rc','rf','rn','rgd'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ntf(`Contrato ${cod} registrado · ${gd?'Enlace Drive guardado ✓':'Sin enlace Drive'}`);
 }
 function gRisk(){
   const n=document.getElementById('rn2').value;
@@ -764,6 +948,7 @@ document.getElementById('nf').textContent=td();
 loadAll();
 rDash();rCasos();rCons();rCtrs();rRisks();rEvids();rHeat();rLey();
 // Actualizar UI con API key (ya declarada al inicio del script)
+checkSession();
 if(CLAUDE_API_KEY) document.getElementById('api-btn').textContent='🤖 API IA ✓';
 document.getElementById('api-key-input').value=CLAUDE_API_KEY;
 
@@ -1032,6 +1217,240 @@ async function ejecutarAnalisis() {
   }
   btn.disabled = false;
   btn.textContent = '🤖 Analizar con IA';
+}
+
+
+// ===== REPORTES PDF =====
+function openReportModal() {
+  // Llenar selector de contratos con análisis IA
+  const sel = document.getElementById('rep-ctr-sel');
+  if (sel) {
+    const analyzed = ctrs.filter(c => c.aiResult);
+    sel.innerHTML = '<option value="">— Selecciona un contrato analizado —</option>' +
+      analyzed.map((c,i) => `<option value="${ctrs.indexOf(c)}">${c.c} · ${c.cl} (${c.p})</option>`).join('');
+  }
+  om('mreport');
+}
+
+function genReport(tipo, pais) {
+  const now = new Date().toLocaleDateString('es-PE', {day:'2-digit',month:'long',year:'numeric'});
+  const user = CURRENT_USER ? CURRENT_USER.name : 'Compliance Officer';
+  let html = '';
+
+  if (tipo === 'ejecutivo') {
+    const casosAb = casos.filter(c=>c.e!=='Cerrado').length;
+    const consP = cons.filter(q=>q.e!=='Respondido'&&q.e!=='Cerrado').length;
+    const ctrsRev = ctrs.filter(c=>c.e==='En revisión').length;
+    const critRisks = risks.filter(r=>r.nv==='Crítico').length;
+    const alertas = [
+      ...cons.filter(q=>q.e==='SLA Vencido').map(q=>`⚠️ SLA VENCIDO: Consulta ${q.c} — ${q.s} (${q.p})`),
+      ...ctrs.filter(c=>c.r==='Crítico').map(c=>`🔴 RIESGO CRÍTICO: Contrato ${c.c} — ${c.cl} · ${c.cls}`),
+      ...risks.filter(r=>r.nv==='Crítico').slice(0,3).map(r=>`⚡ RIESGO CRÍTICO: ${r.n} (${r.p})`)
+    ];
+    const tiposCasos = {};
+    casos.forEach(c=>{tiposCasos[c.t]=(tiposCasos[c.t]||0)+1});
+
+    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+    <title>Reporte Ejecutivo Compliance — Touch Latam</title>
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
+      .header{border-bottom:4px solid #4f8ef7;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+      .logo{font-size:22px;font-weight:700;color:#1a1a2e}.logo span{color:#4f8ef7}
+      .meta{text-align:right;font-size:11px;color:#666}
+      h2{font-size:14px;font-weight:700;color:#1a1a2e;margin:20px 0 10px;padding-bottom:4px;border-bottom:2px solid #e8f0fe}
+      h3{font-size:12px;font-weight:600;color:#4f8ef7;margin:12px 0 6px}
+      .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+      .kpi{background:#f8faff;border:1px solid #d0e0ff;border-radius:10px;padding:14px;text-align:center;border-top:3px solid #4f8ef7}
+      .kpi.danger{border-top-color:#e85555;background:#fff8f8}
+      .kpi.warn{border-top-color:#f0a040;background:#fffaf0}
+      .kpi.ok{border-top-color:#2dd4a0;background:#f0fff8}
+      .kv{font-size:28px;font-weight:700;color:#1a1a2e;line-height:1}
+      .kl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+      .ks{font-size:10px;color:#888;margin-top:4px}
+      .alerta{padding:8px 12px;border-radius:6px;font-size:11px;margin-bottom:6px;border-left:3px solid #e85555;background:#fff8f8;color:#c0392b}
+      .alerta.warn{border-color:#f0a040;background:#fffaf0;color:#b7770d}
+      table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
+      th{background:#f0f4ff;padding:7px 10px;text-align:left;font-weight:600;color:#4f8ef7;border-bottom:2px solid #d0e0ff}
+      td{padding:7px 10px;border-bottom:1px solid #eef0f8;color:#2c2c3e;vertical-align:middle}
+      tr:nth-child(even) td{background:#fafbff}
+      .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+      .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}
+      .bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}.bz{background:#f5f5f5;color:#666}
+      .kpi-bar{height:6px;background:#e0e7ff;border-radius:3px;margin-top:8px;overflow:hidden}
+      .kpi-fill{height:100%;border-radius:3px}
+      .pais-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+      .pais-card{border:1px solid #d0e0ff;border-radius:8px;padding:12px;background:#f8faff}
+      .footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center;display:flex;justify-content:space-between}
+    </style></head><body>
+    <div class="header">
+      <div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:12px;color:#666;margin-top:4px">Sistema de Gestión de Compliance</div></div>
+      <div class="meta"><strong>REPORTE EJECUTIVO</strong><br>${now}<br>Generado por: ${user}<br>Confidencial — Solo uso interno</div>
+    </div>
+    <h2>📊 Indicadores Clave de Compliance — Junio 2026</h2>
+    <div class="kpis">
+      <div class="kpi danger"><div class="kl">Casos abiertos</div><div class="kv">${casosAb}</div><div class="ks">↑ 2 esta semana</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(casosAb/15*100,100)}%;background:#e85555"></div></div></div>
+      <div class="kpi warn"><div class="kl">Consultas pendientes</div><div class="kv">${consP}</div><div class="ks">3 con SLA vencido</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(consP/20*100,100)}%;background:#f0a040"></div></div></div>
+      <div class="kpi warn"><div class="kl">Contratos en revisión</div><div class="kv">${ctrsRev}</div><div class="ks">2 con riesgo crítico</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(ctrsRev/10*100,100)}%;background:#f0a040"></div></div></div>
+      <div class="kpi ok"><div class="kl">SLA cumplido</div><div class="kv">84%</div><div class="ks">Meta: 90%</div><div class="kpi-bar"><div class="kpi-fill" style="width:84%;background:#2dd4a0"></div></div></div>
+    </div>
+    <div class="kpis" style="margin-bottom:24px">
+      <div class="kpi danger"><div class="kl">Riesgos críticos</div><div class="kv">${critRisks}</div><div class="ks">Requieren acción inmediata</div></div>
+      <div class="kpi ok"><div class="kl">Tasa resolución</div><div class="kv">76%</div><div class="ks">Casos cerrados / total</div></div>
+      <div class="kpi warn"><div class="kl">Contratos analizados IA</div><div class="kv">${ctrs.filter(c=>c.an==='Completado').length}</div><div class="ks">de ${ctrs.length} registrados</div></div>
+      <div class="kpi ok"><div class="kl">Capacitaciones</div><div class="kv">75%</div><div class="ks">cobertura 3 países</div></div>
+    </div>
+    <h2>🚨 Alertas Prioritarias</h2>
+    ${alertas.slice(0,6).map(a=>`<div class="alerta">${a}</div>`).join('')}
+    <h2>📁 Casos Recientes</h2>
+    <table><thead><tr><th>Código</th><th>Tipo</th><th>País</th><th>Área</th><th>Estado</th><th>Responsable</th></tr></thead><tbody>
+    ${casos.slice(0,7).map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td><span class="badge ${c.t==='Fraude'?'bd':c.t==='Legal'?'bb':c.t==='Laboral'?'bw':'bz'}">${c.t}</span></td><td>${c.p}</td><td>${c.a}</td><td><span class="badge ${c.e==='Cerrado'?'bz':c.e==='En investigación'?'bd':'bw'}">${c.e}</span></td><td>${c.r}</td></tr>`).join('')}
+    </tbody></table>
+    <h2>⚡ Top Riesgos Críticos por País</h2>
+    <div class="pais-grid">
+      ${['PE','CL','CO'].map(p=>{
+        const pr=risks.filter(r=>r.p===p&&r.nv==='Crítico');
+        const flag={PE:'🇵🇪 Perú',CL:'🇨🇱 Chile',CO:'🇨🇴 Colombia'}[p];
+        return `<div class="pais-card"><div style="font-weight:700;margin-bottom:8px">${flag}</div>${pr.slice(0,3).map(r=>`<div style="font-size:10px;padding:4px 0;border-bottom:1px solid #eee;color:#c0392b">⚡ ${r.n}</div>`).join('')}<div style="margin-top:6px;font-size:10px;color:#666">${pr.length} riesgos críticos identificados</div></div>`;
+      }).join('')}
+    </div>
+    <h2>📋 Estado de Contratos</h2>
+    <table><thead><tr><th>Código</th><th>Cliente</th><th>País</th><th>Riesgo</th><th>Cláusulas críticas</th><th>Estado</th></tr></thead><tbody>
+    ${ctrs.filter(c=>c.r==='Crítico'||c.r==='Alto').map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td style="font-weight:600">${c.cl}</td><td>${c.p}</td><td><span class="badge ${c.r==='Crítico'?'bd':'bw'}">${c.r}</span></td><td style="font-size:10px;color:#c0392b">${c.cls}</td><td><span class="badge ${c.e==='Vigente'?'bg':c.e==='En revisión'?'bw':'bb'}">${c.e}</span></td></tr>`).join('')}
+    </tbody></table>
+    <div class="footer"><span>TouchCompliance 360° · Sistema de Gestión de Compliance</span><span>Touch Latam · Perú · Chile · Colombia</span><span>Documento Confidencial · ${now}</span></div>
+    </body></html>`;
+  }
+
+  else if (tipo === 'pais') {
+    const pNombre = {PE:'Perú',CL:'Chile',CO:'Colombia',Todos:'Todos los países'}[pais];
+    const pFlag = {PE:'🇵🇪',CL:'🇨🇱',CO:'🇨🇴',Todos:'🌎'}[pais];
+    const ley = {PE:'Ley 29245 · Ley 27626 · SUNAFIL · Ley 29733',CL:'Ley 20.393 · Ley 20.123 · Código del Trabajo',CO:'CST · Ley 1581/12 · Ley 1474/11 · DIAN',Todos:'Legislación aplicable por país'}[pais];
+    const fCasos = pais==='Todos'?casos:casos.filter(c=>c.p===pais);
+    const fCtrs = pais==='Todos'?ctrs:ctrs.filter(c=>c.p===pais);
+    const fRisks = pais==='Todos'?risks:risks.filter(r=>r.p===pais||r.p==='Todos'||r.p.includes(pais));
+    const fCaps = pais==='Todos'?caps:caps.filter(c=>c.p===pais||c.p==='Todos');
+    const fAuds = pais==='Todos'?auds:auds.filter(a=>a.p===pais);
+
+    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+    <title>Reporte Compliance ${pNombre} — Touch Latam</title>
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
+      .header{border-bottom:4px solid #4f8ef7;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+      .logo{font-size:22px;font-weight:700;color:#1a1a2e}.logo span{color:#4f8ef7}
+      .meta{text-align:right;font-size:11px;color:#666}
+      h2{font-size:14px;font-weight:700;color:#1a1a2e;margin:20px 0 10px;padding-bottom:4px;border-bottom:2px solid #e8f0fe}
+      .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+      .kpi{background:#f8faff;border:1px solid #d0e0ff;border-radius:8px;padding:12px;text-align:center;border-top:3px solid #4f8ef7}
+      .kpi.danger{border-top-color:#e85555}.kpi.warn{border-top-color:#f0a040}.kpi.ok{border-top-color:#2dd4a0}
+      .kv{font-size:24px;font-weight:700;line-height:1}.kl{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:4px}.ks{font-size:10px;color:#888;margin-top:3px}
+      table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
+      th{background:#f0f4ff;padding:6px 10px;text-align:left;font-weight:600;color:#4f8ef7;border-bottom:2px solid #d0e0ff}
+      td{padding:6px 10px;border-bottom:1px solid #eef0f8;vertical-align:middle}
+      tr:nth-child(even) td{background:#fafbff}
+      .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+      .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}
+      .bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}.bz{background:#f5f5f5;color:#666}
+      .ley-box{background:#f0f4ff;border:1px solid #d0e0ff;border-radius:8px;padding:10px;font-size:11px;color:#2563eb;margin-bottom:16px}
+      .footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
+      .page-break{page-break-before:always;margin-top:32px}
+    </style></head><body>
+    <div class="header">
+      <div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:13px;font-weight:600;margin-top:4px">${pFlag} Reporte de Compliance — ${pNombre}</div></div>
+      <div class="meta"><strong>REPORTE POR PAÍS</strong><br>${now}<br>Generado por: ${user}<br>Confidencial</div>
+    </div>
+    <div class="ley-box">⚖️ <strong>Marco legal aplicable:</strong> ${ley}</div>
+    <div class="kpis">
+      <div class="kpi danger"><div class="kl">Casos activos</div><div class="kv">${fCasos.filter(c=>c.e!=='Cerrado').length}</div><div class="ks">de ${fCasos.length} totales</div></div>
+      <div class="kpi warn"><div class="kl">Contratos en revisión</div><div class="kv">${fCtrs.filter(c=>c.e==='En revisión').length}</div><div class="ks">de ${fCtrs.length} totales</div></div>
+      <div class="kpi danger"><div class="kl">Riesgos críticos</div><div class="kv">${fRisks.filter(r=>r.nv==='Crítico').length}</div><div class="ks">requieren acción</div></div>
+      <div class="kpi ok"><div class="kl">Capacitaciones</div><div class="kv">${fCaps.filter(c=>c.e==='Completada').length}</div><div class="ks">completadas</div></div>
+    </div>
+    <h2>📁 Casos y Denuncias</h2>
+    <table><thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>Área</th><th>Estado</th><th>Descripción</th></tr></thead><tbody>
+    ${fCasos.map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td>${c.f}</td><td><span class="badge ${c.t==='Fraude'?'bd':c.t==='Legal'?'bb':'bw'}">${c.t}</span></td><td>${c.a}</td><td><span class="badge ${c.e==='Cerrado'?'bz':c.e==='En investigación'?'bd':'bw'}">${c.e}</span></td><td style="font-size:10px;max-width:200px">${c.d.substring(0,80)}...</td></tr>`).join('')}
+    </tbody></table>
+    <h2>📋 Contratos</h2>
+    <table><thead><tr><th>Código</th><th>Cliente</th><th>Tipo</th><th>Riesgo</th><th>Cláusulas críticas</th><th>Estado</th><th>Análisis IA</th></tr></thead><tbody>
+    ${fCtrs.map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td style="font-weight:600">${c.cl}</td><td style="font-size:10px">${c.t}</td><td><span class="badge ${c.r==='Crítico'?'bd':c.r==='Alto'?'bw':c.r==='Medio'?'bb':'bg'}">${c.r}</span></td><td style="font-size:10px;color:#c0392b">${c.cls}</td><td><span class="badge ${c.e==='Vigente'?'bg':c.e==='En revisión'?'bw':'bb'}">${c.e}</span></td><td><span class="badge ${c.an==='Completado'?'bg':'bw'}">${c.an}</span></td></tr>`).join('')}
+    </tbody></table>
+    <h2>⚡ Matriz de Riesgos</h2>
+    <table><thead><tr><th>Riesgo</th><th>Área</th><th>Probabilidad</th><th>Impacto</th><th>Nivel</th><th>Control</th><th>Responsable</th></tr></thead><tbody>
+    ${fRisks.map(r=>`<tr><td style="font-weight:500;max-width:160px">${r.n}</td><td>${r.a}</td><td><span class="badge ${r.pr==='Alta'?'bd':r.pr==='Media'?'bw':'bg'}">${r.pr}</span></td><td>${r.im}</td><td><span class="badge ${r.nv==='Crítico'?'bd':r.nv==='Alto'?'bw':r.nv==='Medio'?'bb':'bg'}">${r.nv}</span></td><td style="font-size:10px">${r.ct}</td><td style="font-size:10px">${r.rs}</td></tr>`).join('')}
+    </tbody></table>
+    <h2>🎓 Capacitaciones</h2>
+    <table><thead><tr><th>Capacitación</th><th>Tipo</th><th>Fecha</th><th>Participantes</th><th>Calificación</th><th>Estado</th></tr></thead><tbody>
+    ${fCaps.map(c=>`<tr><td style="font-weight:500">${c.n}</td><td style="font-size:10px">${c.t}</td><td>${c.f}</td><td>${c.e==='Completada'?c.part+' personas':'—'}</td><td>${c.e==='Completada'?c.cal+'%':'—'}</td><td><span class="badge ${c.e==='Completada'?'bg':c.e==='Programada'?'bb':'bw'}">${c.e}</span></td></tr>`).join('')}
+    </tbody></table>
+    <h2>🔍 Auditorías</h2>
+    <table><thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Auditor</th><th>Hallazgos</th><th>Estado</th></tr></thead><tbody>
+    ${fAuds.map(a=>`<tr><td style="font-family:monospace;font-size:10px">${a.c}</td><td>${a.n}</td><td><span class="badge bb">${a.t}</span></td><td>${a.fi}</td><td>${a.r}</td><td style="font-weight:600;color:${a.hall>3?'#c0392b':a.hall>0?'#b7770d':'#27ae60'}">${a.hall}</td><td><span class="badge ${a.e==='Completada'?'bg':a.e==='En curso'?'bb':'bw'}">${a.e}</span></td></tr>`).join('')}
+    </tbody></table>
+    <div class="footer"><span>TouchCompliance 360° · Sistema de Gestión de Compliance</span><span>${pFlag} Touch Latam ${pNombre}</span><span>Confidencial · ${now}</span></div>
+    </body></html>`;
+  }
+
+  else if (tipo === 'contrato') {
+    const sel = document.getElementById('rep-ctr-sel');
+    const idx = sel ? parseInt(sel.value) : -1;
+    if (isNaN(idx) || idx < 0 || !ctrs[idx] || !ctrs[idx].aiResult) {
+      ntf('Selecciona un contrato con análisis IA completado', 'err');
+      return;
+    }
+    const c = ctrs[idx];
+    const pFlag = {PE:'🇵🇪',CL:'🇨🇱',CO:'🇨🇴'}[c.p]||'';
+    const ley = {PE:'Ley 29245 · Ley 27626 · SUNAFIL · Ley 29733',CL:'Ley 20.393 · Ley 20.123 · SII',CO:'CST · Ley 1581/12 · Ley 1474/11 · DIAN'}[c.p]||'';
+
+    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+    <title>Análisis IA — ${c.c} ${c.cl}</title>
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
+      .header{border-bottom:4px solid #9b7ff4;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+      .logo{font-size:20px;font-weight:700;color:#1a1a2e}.logo span{color:#4f8ef7}
+      .meta{text-align:right;font-size:11px;color:#666}
+      .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+      .info-card{background:#f8faff;border:1px solid #d0e0ff;border-radius:8px;padding:10px}
+      .ik{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:3px}
+      .iv{font-size:13px;font-weight:600}
+      .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+      .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}
+      .bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}
+      .ley-box{background:#f0f4ff;border:1px solid #d0e0ff;border-radius:8px;padding:10px;font-size:11px;color:#2563eb;margin-bottom:20px}
+      .ai-content h3{font-size:13px;color:#4f8ef7;font-weight:700;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid #e8f0fe}
+      .ai-content ul{padding-left:18px;margin:6px 0}
+      .ai-content li{margin-bottom:4px;line-height:1.5}
+      .ai-content strong{color:#1a1a2e;font-weight:600}
+      .footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
+      .warn-box{background:#fff8f8;border:1px solid #fcc;border-radius:8px;padding:10px;font-size:11px;color:#c0392b;margin-bottom:16px}
+    </style></head><body>
+    <div class="header">
+      <div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:13px;font-weight:600;margin-top:4px">🤖 Informe de Análisis IA — Contrato</div></div>
+      <div class="meta"><strong>ANÁLISIS DE CONTRATO</strong><br>${now}<br>Generado por: ${user}<br>Confidencial</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><div class="ik">Código</div><div class="iv" style="font-family:monospace">${c.c}</div></div>
+      <div class="info-card"><div class="ik">Cliente</div><div class="iv">${c.cl}</div></div>
+      <div class="info-card"><div class="ik">País</div><div class="iv">${pFlag} ${{PE:'Perú',CL:'Chile',CO:'Colombia'}[c.p]||c.p}</div></div>
+      <div class="info-card"><div class="ik">Tipo de contrato</div><div class="iv">${c.t}</div></div>
+      <div class="info-card"><div class="ik">Nivel de riesgo</div><div class="iv"><span class="badge ${c.r==='Crítico'?'bd':c.r==='Alto'?'bw':c.r==='Medio'?'bb':'bg'}">${c.r}</span></div></div>
+      <div class="info-card"><div class="ik">Estado</div><div class="iv"><span class="badge ${c.e==='Vigente'?'bg':c.e==='En revisión'?'bw':'bb'}">${c.e}</span></div></div>
+    </div>
+    <div class="ley-box">⚖️ <strong>Marco legal aplicable:</strong> ${ley}</div>
+    ${c.r==='Crítico'?`<div class="warn-box">🚨 <strong>ATENCIÓN:</strong> Este contrato tiene nivel de riesgo CRÍTICO. Se recomienda revisión legal antes de firmar. Cláusulas identificadas: ${c.cls}</div>`:''}
+    <div class="ai-content">${c.aiResult}</div>
+    <div class="footer"><span>TouchCompliance 360° · Análisis generado con Claude AI (Anthropic)</span><span>Touch Latam · ${pFlag} ${c.p}</span><span>Confidencial · ${now}</span></div>
+    </body></html>`;
+  }
+
+  if (html) {
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 800);
+    cm('mreport');
+  }
 }
 
 document.querySelectorAll('.mo').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')})});
