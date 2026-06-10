@@ -617,12 +617,14 @@ function doLogin() {
   if (USERS[u] && USERS[u].pass === p) {
     CURRENT_USER = { ...USERS[u], username: u };
     sessionStorage.setItem('tl_session', JSON.stringify(CURRENT_USER));
-    document.getElementById('login-overlay').style.display = 'none';
+    const overlay = document.getElementById('login-overlay');
+    if (overlay) overlay.remove();
     applyRole();
-    err.classList.remove('show');
+    if (err) err.classList.remove('show');
   } else {
-    err.classList.add('show');
+    if (err) err.classList.add('show');
     document.getElementById('li-pass').value = '';
+    document.getElementById('li-pass').focus();
   }
 }
 
@@ -649,7 +651,8 @@ function checkSession() {
   if (s) {
     try {
       CURRENT_USER = JSON.parse(s);
-      document.getElementById('login-overlay').style.display = 'none';
+      const overlay = document.getElementById('login-overlay');
+      if (overlay) overlay.remove();
       applyRole();
       return true;
     } catch(e) {}
