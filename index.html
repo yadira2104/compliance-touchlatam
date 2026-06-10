@@ -143,21 +143,21 @@ select.fi option{background:var(--bg3)}
 </head>
 <body>
 
-<div class="login-overlay" id="login-overlay">
-  <div class="login-box">
-    <div class="login-logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:13px">· 360°</span></div>
-    <div class="login-sub">Sistema de Gestión de Compliance · Acceso restringido</div>
-    <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
-    <div class="fg">
-      <label class="fl">Usuario</label>
-      <input class="fi" type="text" id="li-user" placeholder="tu usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+<div id="login-overlay" style="position:fixed;inset:0;background:#0d0f14;z-index:9999;display:flex;align-items:center;justify-content:center">
+  <div style="background:#13161e;border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:40px 36px;width:380px;max-width:95vw">
+    <div style="font-size:22px;font-weight:700;color:#e8eaf0;margin-bottom:4px">Touch<span style="color:#4f8ef7">Compliance</span> <span style="color:#7a7f94;font-weight:300;font-size:13px">360°</span></div>
+    <div style="font-size:13px;color:#7a7f94;margin-bottom:32px">Sistema de Gestión de Compliance · Acceso restringido</div>
+    <div id="login-err" style="display:none;background:rgba(232,85,85,0.12);border:1px solid rgba(232,85,85,0.25);color:#f09090;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px">Usuario o contraseña incorrectos</div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:12px;font-weight:500;color:#7a7f94;margin-bottom:6px">Usuario</label>
+      <input id="li-user" type="text" placeholder="tu usuario" style="width:100%;background:#1a1e28;border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;color:#e8eaf0;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <div class="fg">
-      <label class="fl">Contraseña</label>
-      <input class="fi" type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <div style="margin-bottom:20px">
+      <label style="display:block;font-size:12px;font-weight:500;color:#7a7f94;margin-bottom:6px">Contraseña</label>
+      <input id="li-pass" type="password" placeholder="••••••••" style="width:100%;background:#1a1e28;border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;color:#e8eaf0;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="btn btn-p" style="width:100%;justify-content:center;padding:11px;margin-top:4px" onclick="doLogin()">Ingresar al sistema</button>
-    <div class="login-footer">Touch Latam · Perú · Chile · Colombia<br>Solo personal autorizado</div>
+    <button onclick="doLogin()" style="width:100%;background:#4f8ef7;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer">Ingresar al sistema</button>
+    <div style="font-size:11px;color:#7a7f94;text-align:center;margin-top:20px">Touch Latam · Perú · Chile · Colombia<br>Solo personal autorizado</div>
   </div>
 </div>
 <div class="app">
