@@ -1445,11 +1445,25 @@ function genReport(tipo, pais) {
   }
 
   if (html) {
-    const win = window.open('', '_blank');
-    win.document.write(html);
-    win.document.close();
-    setTimeout(() => win.print(), 800);
     cm('mreport');
+    // Mostrar reporte en iframe dentro de modal para imprimir
+    let rv = document.getElementById('report-viewer');
+    if (!rv) {
+      rv = document.createElement('div');
+      rv.id = 'report-viewer';
+      rv.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px';
+      rv.innerHTML = '<div style="width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+        '<div style="color:#fff;font-size:14px;font-weight:600">📊 Vista previa del reporte</div>' +
+        '<div style="display:flex;gap:8px">' +
+        '<button onclick="document.getElementById('rv-frame').contentWindow.print()" style="background:#4f8ef7;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:var(--font)">🖨️ Imprimir / Guardar PDF</button>' +
+        '<button onclick="document.getElementById('report-viewer').remove()" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:var(--font)">✕ Cerrar</button>' +
+        '</div></div>' +
+        '<iframe id="rv-frame" style="width:100%;max-width:900px;height:calc(100vh - 100px);border:none;border-radius:12px;background:#fff"></iframe>';
+      document.body.appendChild(rv);
+    }
+    const frame = document.getElementById('rv-frame');
+    frame.srcdoc = html;
+    ntf('✅ Reporte listo · Haz clic en "Imprimir / Guardar PDF"');
   }
 }
 
