@@ -102,64 +102,11 @@ select.fi option{background:var(--bg3)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
 
-<style id="login-styles">
-.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
-.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px 36px;width:380px;max-width:95vw}
-.login-logo{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
-.login-logo span{color:var(--accent)}
-.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
-.login-err{background:rgba(232,85,85,0.12);border:1px solid rgba(232,85,85,0.25);color:#f09090;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none}
-.login-err.show{display:block}
-.login-footer{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
-</style>
 
-<style id="print-styles">
-@media print {
-  .login-overlay,.topbar,.sidebar,.btn,.mo,#ntf,.nb,.cpill,
-  button:not(.print-keep){display:none!important}
-  .app{display:block!important;grid-template-columns:1fr!important}
-  .main{overflow:visible!important;padding:16px!important}
-  .view{display:none!important}
-  .view.print-active{display:block!important}
-  body{background:#fff!important;color:#000!important;font-size:12px!important}
-  .card{border:1px solid #ddd!important;background:#fff!important;break-inside:avoid}
-  .metrics{grid-template-columns:repeat(4,1fr)!important}
-  .mc{background:#f8f9fa!important;border:1px solid #ddd!important}
-  .mv{color:#000!important}
-  .ml,.ms,.ps,.muted{color:#666!important}
-  table.t th{background:#f0f0f0!important;color:#333!important}
-  table.t td{color:#000!important;border-color:#ddd!important}
-  .badge{border:1px solid #ccc!important;color:#333!important;background:#f5f5f5!important}
-  .pf{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .report-header{display:block!important}
-  .report-footer{display:block!important}
-  h1,h2,h3{color:#000!important}
-  .al{border:1px solid #ddd!important;background:#f9f9f9!important;color:#333!important}
-  a{color:#000!important;text-decoration:none!important}
-}
-.report-header{display:none;padding:20px 0 16px;border-bottom:3px solid #4f8ef7;margin-bottom:20px}
-.report-footer{display:none;padding:12px 0;border-top:1px solid #ddd;margin-top:20px;font-size:11px;color:#666;text-align:center}
-</style>
 </head>
 <body>
 
-<div id="login-overlay" style="position:fixed;inset:0;background:#0d0f14;z-index:9999;display:flex;align-items:center;justify-content:center">
-  <div style="background:#13161e;border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:40px 36px;width:380px;max-width:95vw">
-    <div style="font-size:22px;font-weight:700;color:#e8eaf0;margin-bottom:4px">Touch<span style="color:#4f8ef7">Compliance</span> <span style="color:#7a7f94;font-weight:300;font-size:13px">360°</span></div>
-    <div style="font-size:13px;color:#7a7f94;margin-bottom:32px">Sistema de Gestión de Compliance · Acceso restringido</div>
-    <div id="login-err" style="display:none;background:rgba(232,85,85,0.12);border:1px solid rgba(232,85,85,0.25);color:#f09090;border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px">Usuario o contraseña incorrectos</div>
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:12px;font-weight:500;color:#7a7f94;margin-bottom:6px">Usuario</label>
-      <input id="li-user" type="text" placeholder="tu usuario" style="width:100%;background:#1a1e28;border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;color:#e8eaf0;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div style="margin-bottom:20px">
-      <label style="display:block;font-size:12px;font-weight:500;color:#7a7f94;margin-bottom:6px">Contraseña</label>
-      <input id="li-pass" type="password" placeholder="••••••••" style="width:100%;background:#1a1e28;border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;color:#e8eaf0;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button onclick="doLogin()" style="width:100%;background:#4f8ef7;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer">Ingresar al sistema</button>
-    <div style="font-size:11px;color:#7a7f94;text-align:center;margin-top:20px">Touch Latam · Perú · Chile · Colombia<br>Solo personal autorizado</div>
-  </div>
-</div>
+
 <div class="app">
 <header class="topbar">
   <div class="logo">Touch<span>Compliance</span> <span style="color:var(--muted);font-weight:300;font-size:12px">· 360°</span></div>
@@ -173,7 +120,7 @@ select.fi option{background:var(--bg3)}
   <button onclick="openReportModal()" style="background:rgba(45,212,160,0.12);border:1px solid rgba(45,212,160,0.25);color:var(--accent2);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">📊 Exportar PDF</button>
 <button onclick="om('mapikey')" style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.25);color:var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font)" id="api-btn">🤖 API IA</button>
 <div class="avatar" id="av-init">CO</div>
-<button onclick="logout()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;margin-left:4px;font-family:var(--font)" title="Cerrar sesión">⏻</button>
+
 </header>
 
 <aside class="sidebar">
@@ -602,71 +549,6 @@ select.fi option{background:var(--bg3)}
 
 <script>
 
-// ===== USUARIOS Y ROLES =====
-const USERS = {
-  'compliance': { pass: 'Touch2026!', role: 'admin', name: 'Compliance Officer', pais: 'Todos' },
-  'ceo':        { pass: 'Ceo2026#',   role: 'viewer', name: 'CEO',               pais: 'Todos' },
-  'cfo':        { pass: 'Cfo2026#',   role: 'viewer', name: 'CFO / Finanzas',    pais: 'Todos' },
-};
-let CURRENT_USER = null;
-
-function doLogin() {
-  const u = document.getElementById('li-user').value.trim().toLowerCase();
-  const p = document.getElementById('li-pass').value;
-  const err = document.getElementById('login-err');
-  if (USERS[u] && USERS[u].pass === p) {
-    CURRENT_USER = { ...USERS[u], username: u };
-    sessionStorage.setItem('tl_session', JSON.stringify(CURRENT_USER));
-    const overlay = document.getElementById('login-overlay');
-    if (overlay) overlay.remove();
-    applyRole();
-    if (err) err.classList.remove('show');
-  } else {
-    if (err) err.classList.add('show');
-    document.getElementById('li-pass').value = '';
-    document.getElementById('li-pass').focus();
-  }
-}
-
-function applyRole() {
-  if (!CURRENT_USER) return;
-  // Update avatar and name
-  document.querySelector('.avatar').textContent = CURRENT_USER.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  // Viewer: hide all action buttons
-  if (CURRENT_USER.role === 'viewer') {
-    const btns = document.querySelectorAll('.btn-p, .btn.btn-p');
-    btns.forEach(b => {
-      if (b.textContent.includes('+') || b.textContent.includes('Nuevo') || b.textContent.includes('Subir') || b.textContent.includes('Registrar')) {
-        b.style.display = 'none';
-      }
-    });
-    // Hide API key button
-    const apiBtn = document.getElementById('api-btn');
-    if (apiBtn) apiBtn.style.display = 'none';
-  }
-}
-
-function checkSession() {
-  const s = sessionStorage.getItem('tl_session');
-  if (s) {
-    try {
-      CURRENT_USER = JSON.parse(s);
-      const overlay = document.getElementById('login-overlay');
-      if (overlay) overlay.remove();
-      applyRole();
-      return true;
-    } catch(e) {}
-  }
-  return false;
-}
-
-function logout() {
-  sessionStorage.removeItem('tl_session');
-  CURRENT_USER = null;
-  location.reload();
-}
-
-
 // ===== API KEY — DECLARACIÓN TEMPRANA (ANTES DE CUALQUIER USO) =====
 // ⚠️ CRÍTICO: debe ir al inicio del script, antes de loadAll() y del bloque INIT
 let CLAUDE_API_KEY = localStorage.getItem('tl_apikey') || '';
@@ -951,7 +833,6 @@ document.getElementById('nf').textContent=td();
 loadAll();
 rDash();rCasos();rCons();rCtrs();rRisks();rEvids();rHeat();rLey();
 // Actualizar UI con API key (ya declarada al inicio del script)
-checkSession();
 if(CLAUDE_API_KEY) document.getElementById('api-btn').textContent='🤖 API IA ✓';
 document.getElementById('api-key-input').value=CLAUDE_API_KEY;
 
@@ -1225,107 +1106,73 @@ async function ejecutarAnalisis() {
 
 // ===== REPORTES PDF =====
 function openReportModal() {
-  // Llenar selector de contratos con análisis IA
   const sel = document.getElementById('rep-ctr-sel');
   if (sel) {
     const analyzed = ctrs.filter(c => c.aiResult);
     sel.innerHTML = '<option value="">— Selecciona un contrato analizado —</option>' +
-      analyzed.map((c,i) => `<option value="${ctrs.indexOf(c)}">${c.c} · ${c.cl} (${c.p})</option>`).join('');
+      analyzed.map(c => `<option value="${ctrs.indexOf(c)}">${c.c} · ${c.cl} (${c.p})</option>`).join('');
   }
   om('mreport');
 }
 
 function genReport(tipo, pais) {
   const now = new Date().toLocaleDateString('es-PE', {day:'2-digit',month:'long',year:'numeric'});
-  const user = CURRENT_USER ? CURRENT_USER.name : 'Compliance Officer';
   let html = '';
-
   if (tipo === 'ejecutivo') {
     const casosAb = casos.filter(c=>c.e!=='Cerrado').length;
-    const consP = cons.filter(q=>q.e!=='Respondido'&&q.e!=='Cerrado').length;
+    const consP = cons.filter(q=>q.e!=='Respondido').length;
     const ctrsRev = ctrs.filter(c=>c.e==='En revisión').length;
     const critRisks = risks.filter(r=>r.nv==='Crítico').length;
-    const alertas = [
-      ...cons.filter(q=>q.e==='SLA Vencido').map(q=>`⚠️ SLA VENCIDO: Consulta ${q.c} — ${q.s} (${q.p})`),
-      ...ctrs.filter(c=>c.r==='Crítico').map(c=>`🔴 RIESGO CRÍTICO: Contrato ${c.c} — ${c.cl} · ${c.cls}`),
-      ...risks.filter(r=>r.nv==='Crítico').slice(0,3).map(r=>`⚡ RIESGO CRÍTICO: ${r.n} (${r.p})`)
-    ];
-    const tiposCasos = {};
-    casos.forEach(c=>{tiposCasos[c.t]=(tiposCasos[c.t]||0)+1});
-
-    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-    <title>Reporte Ejecutivo Compliance — Touch Latam</title>
-    <style>
-      *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
-      .header{border-bottom:4px solid #4f8ef7;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
-      .logo{font-size:22px;font-weight:700;color:#1a1a2e}.logo span{color:#4f8ef7}
-      .meta{text-align:right;font-size:11px;color:#666}
-      h2{font-size:14px;font-weight:700;color:#1a1a2e;margin:20px 0 10px;padding-bottom:4px;border-bottom:2px solid #e8f0fe}
-      h3{font-size:12px;font-weight:600;color:#4f8ef7;margin:12px 0 6px}
-      .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-      .kpi{background:#f8faff;border:1px solid #d0e0ff;border-radius:10px;padding:14px;text-align:center;border-top:3px solid #4f8ef7}
-      .kpi.danger{border-top-color:#e85555;background:#fff8f8}
-      .kpi.warn{border-top-color:#f0a040;background:#fffaf0}
-      .kpi.ok{border-top-color:#2dd4a0;background:#f0fff8}
-      .kv{font-size:28px;font-weight:700;color:#1a1a2e;line-height:1}
-      .kl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-      .ks{font-size:10px;color:#888;margin-top:4px}
-      .alerta{padding:8px 12px;border-radius:6px;font-size:11px;margin-bottom:6px;border-left:3px solid #e85555;background:#fff8f8;color:#c0392b}
-      .alerta.warn{border-color:#f0a040;background:#fffaf0;color:#b7770d}
-      table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
-      th{background:#f0f4ff;padding:7px 10px;text-align:left;font-weight:600;color:#4f8ef7;border-bottom:2px solid #d0e0ff}
-      td{padding:7px 10px;border-bottom:1px solid #eef0f8;color:#2c2c3e;vertical-align:middle}
-      tr:nth-child(even) td{background:#fafbff}
-      .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-      .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}
-      .bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}.bz{background:#f5f5f5;color:#666}
-      .kpi-bar{height:6px;background:#e0e7ff;border-radius:3px;margin-top:8px;overflow:hidden}
-      .kpi-fill{height:100%;border-radius:3px}
-      .pais-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-      .pais-card{border:1px solid #d0e0ff;border-radius:8px;padding:12px;background:#f8faff}
-      .footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center;display:flex;justify-content:space-between}
+    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Ejecutivo · Touch Compliance</title>
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;padding:32px 40px}
+    .header{border-bottom:4px solid #4f8ef7;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+    .logo{font-size:22px;font-weight:700}.logo span{color:#4f8ef7}.meta{text-align:right;font-size:11px;color:#666}
+    h2{font-size:14px;font-weight:700;margin:20px 0 10px;padding-bottom:4px;border-bottom:2px solid #e8f0fe}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    .kpi{background:#f8faff;border:1px solid #d0e0ff;border-radius:10px;padding:14px;text-align:center;border-top:3px solid #4f8ef7}
+    .kpi.d{border-top-color:#e85555}.kpi.w{border-top-color:#f0a040}.kpi.g{border-top-color:#2dd4a0}
+    .kv{font-size:28px;font-weight:700;line-height:1}.kl{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:6px}.ks{font-size:10px;color:#888;margin-top:4px}
+    table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
+    th{background:#f0f4ff;padding:7px 10px;text-align:left;font-weight:600;color:#4f8ef7;border-bottom:2px solid #d0e0ff}
+    td{padding:7px 10px;border-bottom:1px solid #eef0f8}tr:nth-child(even) td{background:#fafbff}
+    .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;display:inline-block}
+    .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}.bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}.bz{background:#f5f5f5;color:#666}
+    .al{padding:8px 12px;border-radius:6px;font-size:11px;margin-bottom:6px;border-left:3px solid #e85555;background:#fff8f8;color:#c0392b}
+    .footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
     </style></head><body>
-    <div class="header">
-      <div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:12px;color:#666;margin-top:4px">Sistema de Gestión de Compliance</div></div>
-      <div class="meta"><strong>REPORTE EJECUTIVO</strong><br>${now}<br>Generado por: ${user}<br>Confidencial — Solo uso interno</div>
-    </div>
-    <h2>📊 Indicadores Clave de Compliance — Junio 2026</h2>
+    <div class="header"><div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:12px;color:#666;margin-top:4px">Sistema de Gestión de Compliance</div></div>
+    <div class="meta"><strong>REPORTE EJECUTIVO</strong><br>${now}<br>Confidencial — Solo uso interno</div></div>
+    <h2>📊 Indicadores Clave — Junio 2026</h2>
     <div class="kpis">
-      <div class="kpi danger"><div class="kl">Casos abiertos</div><div class="kv">${casosAb}</div><div class="ks">↑ 2 esta semana</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(casosAb/15*100,100)}%;background:#e85555"></div></div></div>
-      <div class="kpi warn"><div class="kl">Consultas pendientes</div><div class="kv">${consP}</div><div class="ks">3 con SLA vencido</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(consP/20*100,100)}%;background:#f0a040"></div></div></div>
-      <div class="kpi warn"><div class="kl">Contratos en revisión</div><div class="kv">${ctrsRev}</div><div class="ks">2 con riesgo crítico</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(ctrsRev/10*100,100)}%;background:#f0a040"></div></div></div>
-      <div class="kpi ok"><div class="kl">SLA cumplido</div><div class="kv">84%</div><div class="ks">Meta: 90%</div><div class="kpi-bar"><div class="kpi-fill" style="width:84%;background:#2dd4a0"></div></div></div>
+      <div class="kpi d"><div class="kl">Casos abiertos</div><div class="kv">${casosAb}</div><div class="ks">↑ 2 esta semana</div></div>
+      <div class="kpi w"><div class="kl">Consultas pendientes</div><div class="kv">${consP}</div><div class="ks">3 con SLA vencido</div></div>
+      <div class="kpi w"><div class="kl">Contratos en revisión</div><div class="kv">${ctrsRev}</div><div class="ks">2 con riesgo crítico</div></div>
+      <div class="kpi g"><div class="kl">SLA cumplido</div><div class="kv">84%</div><div class="ks">Meta: 90%</div></div>
     </div>
-    <div class="kpis" style="margin-bottom:24px">
-      <div class="kpi danger"><div class="kl">Riesgos críticos</div><div class="kv">${critRisks}</div><div class="ks">Requieren acción inmediata</div></div>
-      <div class="kpi ok"><div class="kl">Tasa resolución</div><div class="kv">76%</div><div class="ks">Casos cerrados / total</div></div>
-      <div class="kpi warn"><div class="kl">Contratos analizados IA</div><div class="kv">${ctrs.filter(c=>c.an==='Completado').length}</div><div class="ks">de ${ctrs.length} registrados</div></div>
-      <div class="kpi ok"><div class="kl">Capacitaciones</div><div class="kv">75%</div><div class="ks">cobertura 3 países</div></div>
+    <div class="kpis">
+      <div class="kpi d"><div class="kl">Riesgos críticos</div><div class="kv">${critRisks}</div><div class="ks">Acción inmediata</div></div>
+      <div class="kpi g"><div class="kl">Tasa resolución</div><div class="kv">76%</div><div class="ks">Casos cerrados/total</div></div>
+      <div class="kpi w"><div class="kl">Contratos analizados IA</div><div class="kv">${ctrs.filter(c=>c.an==='Completado').length}</div><div class="ks">de ${ctrs.length} totales</div></div>
+      <div class="kpi g"><div class="kl">Capacitaciones</div><div class="kv">75%</div><div class="ks">cobertura 3 países</div></div>
     </div>
     <h2>🚨 Alertas Prioritarias</h2>
-    ${alertas.slice(0,6).map(a=>`<div class="alerta">${a}</div>`).join('')}
+    ${cons.filter(q=>q.e==='SLA Vencido').map(q=>`<div class="al">⚠️ SLA VENCIDO: Consulta ${q.c} — ${q.s} (${q.p})</div>`).join('')}
+    ${ctrs.filter(c=>c.r==='Crítico').map(c=>`<div class="al">🔴 CONTRATO CRÍTICO: ${c.c} — ${c.cl} · ${c.cls}</div>`).join('')}
     <h2>📁 Casos Recientes</h2>
     <table><thead><tr><th>Código</th><th>Tipo</th><th>País</th><th>Área</th><th>Estado</th><th>Responsable</th></tr></thead><tbody>
-    ${casos.slice(0,7).map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td><span class="badge ${c.t==='Fraude'?'bd':c.t==='Legal'?'bb':c.t==='Laboral'?'bw':'bz'}">${c.t}</span></td><td>${c.p}</td><td>${c.a}</td><td><span class="badge ${c.e==='Cerrado'?'bz':c.e==='En investigación'?'bd':'bw'}">${c.e}</span></td><td>${c.r}</td></tr>`).join('')}
+    ${casos.slice(0,7).map(c=>`<tr><td style="font-family:monospace">${c.c}</td><td><span class="badge ${c.t==='Fraude'?'bd':c.t==='Legal'?'bb':'bw'}">${c.t}</span></td><td>${c.p}</td><td>${c.a}</td><td><span class="badge ${c.e==='Cerrado'?'bz':c.e==='En investigación'?'bd':'bw'}">${c.e}</span></td><td>${c.r}</td></tr>`).join('')}
     </tbody></table>
-    <h2>⚡ Top Riesgos Críticos por País</h2>
-    <div class="pais-grid">
-      ${['PE','CL','CO'].map(p=>{
-        const pr=risks.filter(r=>r.p===p&&r.nv==='Crítico');
-        const flag={PE:'🇵🇪 Perú',CL:'🇨🇱 Chile',CO:'🇨🇴 Colombia'}[p];
-        return `<div class="pais-card"><div style="font-weight:700;margin-bottom:8px">${flag}</div>${pr.slice(0,3).map(r=>`<div style="font-size:10px;padding:4px 0;border-bottom:1px solid #eee;color:#c0392b">⚡ ${r.n}</div>`).join('')}<div style="margin-top:6px;font-size:10px;color:#666">${pr.length} riesgos críticos identificados</div></div>`;
-      }).join('')}
-    </div>
-    <h2>📋 Estado de Contratos</h2>
+    <h2>⚡ Riesgos Críticos por País</h2>
+    <table><thead><tr><th>País</th><th>Riesgo</th><th>Área</th><th>Control</th><th>Responsable</th></tr></thead><tbody>
+    ${risks.filter(r=>r.nv==='Crítico').map(r=>`<tr><td>${r.p}</td><td style="font-weight:500">${r.n}</td><td>${r.a}</td><td style="font-size:10px">${r.ct}</td><td>${r.rs}</td></tr>`).join('')}
+    </tbody></table>
+    <h2>📋 Contratos de Alto Riesgo</h2>
     <table><thead><tr><th>Código</th><th>Cliente</th><th>País</th><th>Riesgo</th><th>Cláusulas críticas</th><th>Estado</th></tr></thead><tbody>
-    ${ctrs.filter(c=>c.r==='Crítico'||c.r==='Alto').map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td style="font-weight:600">${c.cl}</td><td>${c.p}</td><td><span class="badge ${c.r==='Crítico'?'bd':'bw'}">${c.r}</span></td><td style="font-size:10px;color:#c0392b">${c.cls}</td><td><span class="badge ${c.e==='Vigente'?'bg':c.e==='En revisión'?'bw':'bb'}">${c.e}</span></td></tr>`).join('')}
+    ${ctrs.filter(c=>c.r==='Crítico'||c.r==='Alto').map(c=>`<tr><td style="font-family:monospace">${c.c}</td><td style="font-weight:600">${c.cl}</td><td>${c.p}</td><td><span class="badge ${c.r==='Crítico'?'bd':'bw'}">${c.r}</span></td><td style="font-size:10px;color:#c0392b">${c.cls}</td><td><span class="badge ${c.e==='Vigente'?'bg':'bw'}">${c.e}</span></td></tr>`).join('')}
     </tbody></table>
-    <div class="footer"><span>TouchCompliance 360° · Sistema de Gestión de Compliance</span><span>Touch Latam · Perú · Chile · Colombia</span><span>Documento Confidencial · ${now}</span></div>
+    <div class="footer"><span>TouchCompliance 360° · Sistema de Gestión de Compliance</span><span>Touch Latam · Perú · Chile · Colombia</span><span>Confidencial · ${now}</span></div>
     </body></html>`;
-  }
-
-  else if (tipo === 'pais') {
+  } else if (tipo === 'pais') {
     const pNombre = {PE:'Perú',CL:'Chile',CO:'Colombia',Todos:'Todos los países'}[pais];
     const pFlag = {PE:'🇵🇪',CL:'🇨🇱',CO:'🇨🇴',Todos:'🌎'}[pais];
     const ley = {PE:'Ley 29245 · Ley 27626 · SUNAFIL · Ley 29733',CL:'Ley 20.393 · Ley 20.123 · Código del Trabajo',CO:'CST · Ley 1581/12 · Ley 1474/11 · DIAN',Todos:'Legislación aplicable por país'}[pais];
@@ -1334,139 +1181,95 @@ function genReport(tipo, pais) {
     const fRisks = pais==='Todos'?risks:risks.filter(r=>r.p===pais||r.p==='Todos'||r.p.includes(pais));
     const fCaps = pais==='Todos'?caps:caps.filter(c=>c.p===pais||c.p==='Todos');
     const fAuds = pais==='Todos'?auds:auds.filter(a=>a.p===pais);
-
-    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-    <title>Reporte Compliance ${pNombre} — Touch Latam</title>
-    <style>
-      *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
-      .header{border-bottom:4px solid #4f8ef7;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
-      .logo{font-size:22px;font-weight:700;color:#1a1a2e}.logo span{color:#4f8ef7}
-      .meta{text-align:right;font-size:11px;color:#666}
-      h2{font-size:14px;font-weight:700;color:#1a1a2e;margin:20px 0 10px;padding-bottom:4px;border-bottom:2px solid #e8f0fe}
-      .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-      .kpi{background:#f8faff;border:1px solid #d0e0ff;border-radius:8px;padding:12px;text-align:center;border-top:3px solid #4f8ef7}
-      .kpi.danger{border-top-color:#e85555}.kpi.warn{border-top-color:#f0a040}.kpi.ok{border-top-color:#2dd4a0}
-      .kv{font-size:24px;font-weight:700;line-height:1}.kl{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:4px}.ks{font-size:10px;color:#888;margin-top:3px}
-      table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
-      th{background:#f0f4ff;padding:6px 10px;text-align:left;font-weight:600;color:#4f8ef7;border-bottom:2px solid #d0e0ff}
-      td{padding:6px 10px;border-bottom:1px solid #eef0f8;vertical-align:middle}
-      tr:nth-child(even) td{background:#fafbff}
-      .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-      .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}
-      .bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}.bz{background:#f5f5f5;color:#666}
-      .ley-box{background:#f0f4ff;border:1px solid #d0e0ff;border-radius:8px;padding:10px;font-size:11px;color:#2563eb;margin-bottom:16px}
-      .footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
-      .page-break{page-break-before:always;margin-top:32px}
+    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte ${pNombre} · Touch Compliance</title>
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;padding:32px 40px}
+    .header{border-bottom:4px solid #4f8ef7;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+    .logo{font-size:20px;font-weight:700}.logo span{color:#4f8ef7}.meta{text-align:right;font-size:11px;color:#666}
+    h2{font-size:14px;font-weight:700;margin:20px 0 10px;padding-bottom:4px;border-bottom:2px solid #e8f0fe}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+    .kpi{background:#f8faff;border:1px solid #d0e0ff;border-radius:8px;padding:12px;text-align:center;border-top:3px solid #4f8ef7}
+    .kpi.d{border-top-color:#e85555}.kpi.w{border-top-color:#f0a040}.kpi.g{border-top-color:#2dd4a0}
+    .kv{font-size:24px;font-weight:700;line-height:1}.kl{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:4px}.ks{font-size:10px;color:#888;margin-top:3px}
+    table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
+    th{background:#f0f4ff;padding:6px 10px;text-align:left;font-weight:600;color:#4f8ef7;border-bottom:2px solid #d0e0ff}
+    td{padding:6px 10px;border-bottom:1px solid #eef0f8}tr:nth-child(even) td{background:#fafbff}
+    .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;display:inline-block}
+    .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}.bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}.bz{background:#f5f5f5;color:#666}
+    .ley{background:#f0f4ff;border:1px solid #d0e0ff;border-radius:8px;padding:10px;font-size:11px;color:#2563eb;margin-bottom:16px}
+    .footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
     </style></head><body>
-    <div class="header">
-      <div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:13px;font-weight:600;margin-top:4px">${pFlag} Reporte de Compliance — ${pNombre}</div></div>
-      <div class="meta"><strong>REPORTE POR PAÍS</strong><br>${now}<br>Generado por: ${user}<br>Confidencial</div>
-    </div>
-    <div class="ley-box">⚖️ <strong>Marco legal aplicable:</strong> ${ley}</div>
+    <div class="header"><div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:13px;font-weight:600;margin-top:4px">${pFlag} Reporte de Compliance — ${pNombre}</div></div>
+    <div class="meta"><strong>REPORTE POR PAÍS</strong><br>${now}<br>Confidencial</div></div>
+    <div class="ley">⚖️ <strong>Marco legal:</strong> ${ley}</div>
     <div class="kpis">
-      <div class="kpi danger"><div class="kl">Casos activos</div><div class="kv">${fCasos.filter(c=>c.e!=='Cerrado').length}</div><div class="ks">de ${fCasos.length} totales</div></div>
-      <div class="kpi warn"><div class="kl">Contratos en revisión</div><div class="kv">${fCtrs.filter(c=>c.e==='En revisión').length}</div><div class="ks">de ${fCtrs.length} totales</div></div>
-      <div class="kpi danger"><div class="kl">Riesgos críticos</div><div class="kv">${fRisks.filter(r=>r.nv==='Crítico').length}</div><div class="ks">requieren acción</div></div>
-      <div class="kpi ok"><div class="kl">Capacitaciones</div><div class="kv">${fCaps.filter(c=>c.e==='Completada').length}</div><div class="ks">completadas</div></div>
+      <div class="kpi d"><div class="kl">Casos activos</div><div class="kv">${fCasos.filter(c=>c.e!=='Cerrado').length}</div><div class="ks">de ${fCasos.length} totales</div></div>
+      <div class="kpi w"><div class="kl">Contratos revisión</div><div class="kv">${fCtrs.filter(c=>c.e==='En revisión').length}</div><div class="ks">de ${fCtrs.length} totales</div></div>
+      <div class="kpi d"><div class="kl">Riesgos críticos</div><div class="kv">${fRisks.filter(r=>r.nv==='Crítico').length}</div><div class="ks">requieren acción</div></div>
+      <div class="kpi g"><div class="kl">Capacitaciones</div><div class="kv">${fCaps.filter(c=>c.e==='Completada').length}</div><div class="ks">completadas</div></div>
     </div>
-    <h2>📁 Casos y Denuncias</h2>
+    <h2>📁 Casos</h2>
     <table><thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>Área</th><th>Estado</th><th>Descripción</th></tr></thead><tbody>
-    ${fCasos.map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td>${c.f}</td><td><span class="badge ${c.t==='Fraude'?'bd':c.t==='Legal'?'bb':'bw'}">${c.t}</span></td><td>${c.a}</td><td><span class="badge ${c.e==='Cerrado'?'bz':c.e==='En investigación'?'bd':'bw'}">${c.e}</span></td><td style="font-size:10px;max-width:200px">${c.d.substring(0,80)}...</td></tr>`).join('')}
+    ${fCasos.map(c=>`<tr><td style="font-family:monospace">${c.c}</td><td>${c.f}</td><td><span class="badge ${c.t==='Fraude'?'bd':'bw'}">${c.t}</span></td><td>${c.a}</td><td><span class="badge ${c.e==='Cerrado'?'bz':c.e==='En investigación'?'bd':'bw'}">${c.e}</span></td><td style="font-size:10px">${c.d.substring(0,70)}...</td></tr>`).join('')}
     </tbody></table>
     <h2>📋 Contratos</h2>
-    <table><thead><tr><th>Código</th><th>Cliente</th><th>Tipo</th><th>Riesgo</th><th>Cláusulas críticas</th><th>Estado</th><th>Análisis IA</th></tr></thead><tbody>
-    ${fCtrs.map(c=>`<tr><td style="font-family:monospace;font-size:10px">${c.c}</td><td style="font-weight:600">${c.cl}</td><td style="font-size:10px">${c.t}</td><td><span class="badge ${c.r==='Crítico'?'bd':c.r==='Alto'?'bw':c.r==='Medio'?'bb':'bg'}">${c.r}</span></td><td style="font-size:10px;color:#c0392b">${c.cls}</td><td><span class="badge ${c.e==='Vigente'?'bg':c.e==='En revisión'?'bw':'bb'}">${c.e}</span></td><td><span class="badge ${c.an==='Completado'?'bg':'bw'}">${c.an}</span></td></tr>`).join('')}
+    <table><thead><tr><th>Código</th><th>Cliente</th><th>Tipo</th><th>Riesgo</th><th>Cláusulas</th><th>Estado</th></tr></thead><tbody>
+    ${fCtrs.map(c=>`<tr><td style="font-family:monospace">${c.c}</td><td style="font-weight:600">${c.cl}</td><td>${c.t}</td><td><span class="badge ${c.r==='Crítico'?'bd':c.r==='Alto'?'bw':'bg'}">${c.r}</span></td><td style="font-size:10px;color:#c0392b">${c.cls}</td><td><span class="badge ${c.e==='Vigente'?'bg':'bw'}">${c.e}</span></td></tr>`).join('')}
     </tbody></table>
-    <h2>⚡ Matriz de Riesgos</h2>
-    <table><thead><tr><th>Riesgo</th><th>Área</th><th>Probabilidad</th><th>Impacto</th><th>Nivel</th><th>Control</th><th>Responsable</th></tr></thead><tbody>
-    ${fRisks.map(r=>`<tr><td style="font-weight:500;max-width:160px">${r.n}</td><td>${r.a}</td><td><span class="badge ${r.pr==='Alta'?'bd':r.pr==='Media'?'bw':'bg'}">${r.pr}</span></td><td>${r.im}</td><td><span class="badge ${r.nv==='Crítico'?'bd':r.nv==='Alto'?'bw':r.nv==='Medio'?'bb':'bg'}">${r.nv}</span></td><td style="font-size:10px">${r.ct}</td><td style="font-size:10px">${r.rs}</td></tr>`).join('')}
+    <h2>⚡ Riesgos</h2>
+    <table><thead><tr><th>Riesgo</th><th>Área</th><th>Prob.</th><th>Impacto</th><th>Nivel</th><th>Control</th></tr></thead><tbody>
+    ${fRisks.map(r=>`<tr><td style="font-weight:500">${r.n}</td><td>${r.a}</td><td><span class="badge ${r.pr==='Alta'?'bd':'bw'}">${r.pr}</span></td><td>${r.im}</td><td><span class="badge ${r.nv==='Crítico'?'bd':r.nv==='Alto'?'bw':'bg'}">${r.nv}</span></td><td style="font-size:10px">${r.ct}</td></tr>`).join('')}
     </tbody></table>
-    <h2>🎓 Capacitaciones</h2>
-    <table><thead><tr><th>Capacitación</th><th>Tipo</th><th>Fecha</th><th>Participantes</th><th>Calificación</th><th>Estado</th></tr></thead><tbody>
-    ${fCaps.map(c=>`<tr><td style="font-weight:500">${c.n}</td><td style="font-size:10px">${c.t}</td><td>${c.f}</td><td>${c.e==='Completada'?c.part+' personas':'—'}</td><td>${c.e==='Completada'?c.cal+'%':'—'}</td><td><span class="badge ${c.e==='Completada'?'bg':c.e==='Programada'?'bb':'bw'}">${c.e}</span></td></tr>`).join('')}
-    </tbody></table>
-    <h2>🔍 Auditorías</h2>
-    <table><thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Auditor</th><th>Hallazgos</th><th>Estado</th></tr></thead><tbody>
-    ${fAuds.map(a=>`<tr><td style="font-family:monospace;font-size:10px">${a.c}</td><td>${a.n}</td><td><span class="badge bb">${a.t}</span></td><td>${a.fi}</td><td>${a.r}</td><td style="font-weight:600;color:${a.hall>3?'#c0392b':a.hall>0?'#b7770d':'#27ae60'}">${a.hall}</td><td><span class="badge ${a.e==='Completada'?'bg':a.e==='En curso'?'bb':'bw'}">${a.e}</span></td></tr>`).join('')}
-    </tbody></table>
-    <div class="footer"><span>TouchCompliance 360° · Sistema de Gestión de Compliance</span><span>${pFlag} Touch Latam ${pNombre}</span><span>Confidencial · ${now}</span></div>
+    <div class="footer"><span>TouchCompliance 360°</span><span>${pFlag} Touch Latam ${pNombre}</span><span>Confidencial · ${now}</span></div>
     </body></html>`;
-  }
-
-  else if (tipo === 'contrato') {
+  } else if (tipo === 'contrato') {
     const sel = document.getElementById('rep-ctr-sel');
     const idx = sel ? parseInt(sel.value) : -1;
-    if (isNaN(idx) || idx < 0 || !ctrs[idx] || !ctrs[idx].aiResult) {
-      ntf('Selecciona un contrato con análisis IA completado', 'err');
-      return;
-    }
+    if (isNaN(idx)||idx<0||!ctrs[idx]||!ctrs[idx].aiResult){ntf('Selecciona un contrato con análisis completado','err');return;}
     const c = ctrs[idx];
     const pFlag = {PE:'🇵🇪',CL:'🇨🇱',CO:'🇨🇴'}[c.p]||'';
-    const ley = {PE:'Ley 29245 · Ley 27626 · SUNAFIL · Ley 29733',CL:'Ley 20.393 · Ley 20.123 · SII',CO:'CST · Ley 1581/12 · Ley 1474/11 · DIAN'}[c.p]||'';
-
-    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-    <title>Análisis IA — ${c.c} ${c.cl}</title>
-    <style>
-      *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
-      .header{border-bottom:4px solid #9b7ff4;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
-      .logo{font-size:20px;font-weight:700;color:#1a1a2e}.logo span{color:#4f8ef7}
-      .meta{text-align:right;font-size:11px;color:#666}
-      .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-      .info-card{background:#f8faff;border:1px solid #d0e0ff;border-radius:8px;padding:10px}
-      .ik{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:3px}
-      .iv{font-size:13px;font-weight:600}
-      .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
-      .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}
-      .bg{background:#e8f8f0;color:#27ae60}.bb{background:#e8f0fe;color:#2563eb}
-      .ley-box{background:#f0f4ff;border:1px solid #d0e0ff;border-radius:8px;padding:10px;font-size:11px;color:#2563eb;margin-bottom:20px}
-      .ai-content h3{font-size:13px;color:#4f8ef7;font-weight:700;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid #e8f0fe}
-      .ai-content ul{padding-left:18px;margin:6px 0}
-      .ai-content li{margin-bottom:4px;line-height:1.5}
-      .ai-content strong{color:#1a1a2e;font-weight:600}
-      .footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
-      .warn-box{background:#fff8f8;border:1px solid #fcc;border-radius:8px;padding:10px;font-size:11px;color:#c0392b;margin-bottom:16px}
+    html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Análisis IA · ${c.c}</title>
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1a2e;padding:32px 40px}
+    .header{border-bottom:4px solid #9b7ff4;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between}
+    .logo{font-size:20px;font-weight:700}.logo span{color:#4f8ef7}.meta{text-align:right;font-size:11px;color:#666}
+    .info{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .ic{background:#f8faff;border:1px solid #d0e0ff;border-radius:8px;padding:10px}
+    .ik{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:3px}.iv{font-size:13px;font-weight:600}
+    .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+    .bd{background:#fde8e8;color:#c0392b}.bw{background:#fef3e2;color:#b7770d}.bg{background:#e8f8f0;color:#27ae60}
+    .ai h3{font-size:13px;color:#4f8ef7;font-weight:700;margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid #e8f0fe}
+    .ai ul{padding-left:18px;margin:6px 0}.ai li{margin-bottom:4px;line-height:1.5}
+    .footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
     </style></head><body>
-    <div class="header">
-      <div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:13px;font-weight:600;margin-top:4px">🤖 Informe de Análisis IA — Contrato</div></div>
-      <div class="meta"><strong>ANÁLISIS DE CONTRATO</strong><br>${now}<br>Generado por: ${user}<br>Confidencial</div>
+    <div class="header"><div><div class="logo">Touch<span>Compliance</span> · 360°</div><div style="font-size:13px;font-weight:600;margin-top:4px">🤖 Análisis IA — ${c.c} · ${c.cl}</div></div>
+    <div class="meta"><strong>ANÁLISIS DE CONTRATO</strong><br>${now}<br>Confidencial</div></div>
+    <div class="info">
+      <div class="ic"><div class="ik">Código</div><div class="iv" style="font-family:monospace">${c.c}</div></div>
+      <div class="ic"><div class="ik">Cliente</div><div class="iv">${c.cl}</div></div>
+      <div class="ic"><div class="ik">País</div><div class="iv">${pFlag} ${{PE:'Perú',CL:'Chile',CO:'Colombia'}[c.p]||c.p}</div></div>
+      <div class="ic"><div class="ik">Tipo</div><div class="iv">${c.t}</div></div>
+      <div class="ic"><div class="ik">Riesgo</div><div class="iv"><span class="badge ${c.r==='Crítico'?'bd':c.r==='Alto'?'bw':'bg'}">${c.r}</span></div></div>
+      <div class="ic"><div class="ik">Estado</div><div class="iv"><span class="badge ${c.e==='Vigente'?'bg':'bw'}">${c.e}</span></div></div>
     </div>
-    <div class="info-grid">
-      <div class="info-card"><div class="ik">Código</div><div class="iv" style="font-family:monospace">${c.c}</div></div>
-      <div class="info-card"><div class="ik">Cliente</div><div class="iv">${c.cl}</div></div>
-      <div class="info-card"><div class="ik">País</div><div class="iv">${pFlag} ${{PE:'Perú',CL:'Chile',CO:'Colombia'}[c.p]||c.p}</div></div>
-      <div class="info-card"><div class="ik">Tipo de contrato</div><div class="iv">${c.t}</div></div>
-      <div class="info-card"><div class="ik">Nivel de riesgo</div><div class="iv"><span class="badge ${c.r==='Crítico'?'bd':c.r==='Alto'?'bw':c.r==='Medio'?'bb':'bg'}">${c.r}</span></div></div>
-      <div class="info-card"><div class="ik">Estado</div><div class="iv"><span class="badge ${c.e==='Vigente'?'bg':c.e==='En revisión'?'bw':'bb'}">${c.e}</span></div></div>
-    </div>
-    <div class="ley-box">⚖️ <strong>Marco legal aplicable:</strong> ${ley}</div>
-    ${c.r==='Crítico'?`<div class="warn-box">🚨 <strong>ATENCIÓN:</strong> Este contrato tiene nivel de riesgo CRÍTICO. Se recomienda revisión legal antes de firmar. Cláusulas identificadas: ${c.cls}</div>`:''}
-    <div class="ai-content">${c.aiResult}</div>
-    <div class="footer"><span>TouchCompliance 360° · Análisis generado con Claude AI (Anthropic)</span><span>Touch Latam · ${pFlag} ${c.p}</span><span>Confidencial · ${now}</span></div>
+    <div class="ai">${c.aiResult}</div>
+    <div class="footer"><span>TouchCompliance 360° · Análisis por Claude AI</span><span>${pFlag} Touch Latam</span><span>Confidencial · ${now}</span></div>
     </body></html>`;
   }
-
   if (html) {
     cm('mreport');
-    // Mostrar reporte en iframe dentro de modal para imprimir
     let rv = document.getElementById('report-viewer');
-    if (!rv) {
-      rv = document.createElement('div');
-      rv.id = 'report-viewer';
-      rv.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px';
-      rv.innerHTML = '<div style="width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-        '<div style="color:#fff;font-size:14px;font-weight:600">📊 Vista previa del reporte</div>' +
-        '<div style="display:flex;gap:8px">' +
-        '<button onclick="document.getElementById('rv-frame').contentWindow.print()" style="background:#4f8ef7;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:var(--font)">🖨️ Imprimir / Guardar PDF</button>' +
-        '<button onclick="document.getElementById('report-viewer').remove()" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:var(--font)">✕ Cerrar</button>' +
-        '</div></div>' +
-        '<iframe id="rv-frame" style="width:100%;max-width:900px;height:calc(100vh - 100px);border:none;border-radius:12px;background:#fff"></iframe>';
-      document.body.appendChild(rv);
-    }
-    const frame = document.getElementById('rv-frame');
-    frame.srcdoc = html;
-    ntf('✅ Reporte listo · Haz clic en "Imprimir / Guardar PDF"');
+    if (rv) rv.remove();
+    rv = document.createElement('div');
+    rv.id = 'report-viewer';
+    rv.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;padding:20px;overflow-y:auto';
+    rv.innerHTML = '<div style="width:100%;max-width:900px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0">' +
+      '<div style="color:#fff;font-size:14px;font-weight:600">📊 Vista previa del reporte</div>' +
+      '<div style="display:flex;gap:8px">' +
+      '<button onclick="document.getElementById('rv-frame').contentWindow.print()" style="background:#4f8ef7;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer">🖨️ Imprimir / Guardar PDF</button>' +
+      '<button onclick="document.getElementById('report-viewer').remove()" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer">✕ Cerrar</button>' +
+      '</div></div>' +
+      '<iframe id="rv-frame" style="width:100%;max-width:900px;flex:1;min-height:600px;border:none;border-radius:12px;background:#fff"></iframe>';
+    document.body.appendChild(rv);
+    document.getElementById('rv-frame').srcdoc = html;
   }
 }
 
